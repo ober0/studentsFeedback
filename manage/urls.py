@@ -3,5 +3,5 @@ from . import views
 
 
 urlpatterns = [
-
+    path('check_fingerprint/', views.check_fingerprint)
 ]

@@ -10,6 +10,8 @@ class Complaint(models.Model):
     user = models.ForeignKey('core.Students', on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Пользователь')
     content = models.TextField(verbose_name='Содержание')
     category = models.TextField(null=False, blank=False, verbose_name='Категория')
+    user_name = models.CharField(max_length=100, blank=True, null=True)
+    user_group = models.CharField(max_length=100, blank=True, null=True)
     is_anonymous = models.BooleanField(default=False, verbose_name='Анонимно')
     email_for_reply = models.EmailField(blank=True, null=True, verbose_name='Email для ответа')
     reply_code = models.CharField(max_length=100, unique=True, blank=True, null=True, verbose_name='Код жалобы')
@@ -21,6 +23,8 @@ class Complaint(models.Model):
     is_spam = models.BooleanField(default=False, verbose_name='Является спамом')
     needs_review = models.BooleanField(default=False, verbose_name='Требует проверки')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+    response_text = models.TextField(verbose_name='Текст ответа', null=True, blank=True)
+    admin = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Администратор')
 
     def set_ip_address(self, value):
         self.ip_address = cipher.encrypt(value.encode()).decode()
@@ -51,13 +55,3 @@ class ComplaintLike(models.Model):
         verbose_name = 'Лайк на обращение'
         verbose_name_plural = 'Лайки на обращения'
 
-
-class ComplaintResponse(models.Model):
-    complaint = models.ForeignKey(Complaint, on_delete=models.CASCADE, verbose_name='Обращение')
-    response_text = models.TextField(verbose_name='Текст ответа')
-    admin = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Администратор')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
-
-    class Meta:
-        verbose_name = 'Ответ на обращение'
-        verbose_name_plural = 'Ответы на обращения'

@@ -1,7 +1,27 @@
 from django.contrib.auth.decorators import user_passes_test
 from django.http import JsonResponse
 from django.shortcuts import render
-
+from django.views.decorators.csrf import csrf_exempt
+from .models import BlockedUser
 
 
 # @user_passes_test(lambda u: u.is_superuser, login_url='/admin/login/')
+
+@csrf_exempt
+def check_fingerprint(request):
+    if request.method == 'POST':
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            ip = x_forwarded_for.split(',')[0]
+        else:
+            ip = request.META.get('REMOTE_ADDR')
+
+        fingerprint = request.POST.get('fingerprint')
+
+        isBlocked_ip = BlockedUser.objects.filter(ip_address=ip).exists()
+        isBlockedFingerprint = BlockedUser.objects.filter(device_identifier=fingerprint).exists()
+
+        if isBlocked_ip or isBlockedFingerprint:
+            return JsonResponse({'isBlocked': True})
+        else:
+            return JsonResponse({'isBlocked': False})

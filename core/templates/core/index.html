@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    {{ email }}
+    {{ auth }}
+    {% for i in complaints %}
+        {{ i.content }}
+        {{ i.like_count }}
+        {{ i.liked }}
+    {% endfor %}
+</body>
+</html>
