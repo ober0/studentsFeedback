@@ -1,3 +1,6 @@
 from django.contrib import admin
+from .models import Complaint, ComplaintResponse, ComplaintLike
 
-# Register your models here.
+admin.site.register(Complaint)
+admin.site.register(ComplaintResponse)
+admin.site.register(ComplaintLike)
