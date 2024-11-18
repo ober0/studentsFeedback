@@ -9,6 +9,7 @@
     {{ auth }}
     <br>
     {% for complaint in complaints %}
+        {{ complaint.id }}
         {{ complaint.category }}
         {{ complaint.content }}
         {% if complaint.is_anonymous %}

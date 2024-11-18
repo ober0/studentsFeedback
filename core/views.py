@@ -1,5 +1,5 @@
 import random
-
+from django.db.models import Q
 from django.db.models import Count, Subquery, OuterRef, Exists
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
@@ -26,6 +26,18 @@ def student_required(redirect_url):
 
 
 def index(request):
+
+    # likes or time
+    sort = request.GET.get('filter')
+    if sort == 'time':
+        sort = '-created_at'
+    elif sort == 'likes':
+        sort = '-like_count'
+    else:
+        sort = '-created_at'  # default filter
+
+    search_query = request.GET.get('search', '')
+
     student_id = request.session.get('student_id')
     email = request.session.get('email')
 
@@ -34,11 +46,12 @@ def index(request):
         user=student_id
     )
 
-
-    complaints = Complaint.objects.filter(is_published=True, is_spam=False, needs_review=False).annotate(
+    complaints = Complaint.objects.filter(is_published=True, is_spam=False, needs_review=False).filter(
+        Q(content__icontains=search_query) | Q(category__icontains=search_query)
+    ).annotate(
         like_count=Count('complaintlike'),
         liked=Exists(likes_subquery)
-    )
+    ).order_by(sort)[:100]
 
     context = {
         'complaints': complaints,
@@ -48,6 +61,7 @@ def index(request):
     }
 
     return render(request, 'core/index.html', context)
+
 
 
 
