@@ -55,12 +55,16 @@ def exit(request):
 
 def auth(request):
     if request.method == 'GET':
-        return render(request, 'core/auth.html')
+        next = request.GET.get('next')
+        if not next:
+            next = '/'
+        return render(request, 'core/auth.html', {'next': next})
 
 
 def send_code(request):
     if request.method == 'POST':
         code = random.randint(100000, 999999)
+        next = request.POST.get('next')
         email = request.POST.get('email')
         header = 'Код для входа в аккаунт на сайте ks54'
 
@@ -68,10 +72,11 @@ def send_code(request):
 
         r.setex(email, 300, code)
 
-        return render(request, 'core/enter_code.html', {'email': email})
+        return render(request, 'core/enter_code.html', {'email': email, 'next': next})
 
 def check_code(request):
     if request.method == 'POST':
+        next = request.POST.get('next')
         code_input = request.POST.get('code')
         email = request.POST.get('email')
         code = r.get(email).decode('utf-8')
@@ -90,7 +95,7 @@ def check_code(request):
             request.session['student_id'] = id
             request.session['email'] = email
 
-            return redirect('index')
+            return redirect(str(next))
 
         else:
             messages.error(request, 'Код неверный!')
@@ -98,8 +103,12 @@ def check_code(request):
 
 
 def create_complaint(request):
-    email, user_id = request.session.get('email'), request.session.get('student_id')
-
+    user_id = request.session.get('student_id')
+    user = Students.objects.filter(id=user_id).first()
+    try:
+        email = user.email
+    except:
+        email = None
     return render(request, 'core/create_complaint.html', {'email': email, 'user_id': user_id})
 
 

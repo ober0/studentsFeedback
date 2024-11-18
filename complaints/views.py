@@ -1,7 +1,13 @@
 import secrets
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
+from core.models import Students
+from complaints.models import Complaint
 from manage.models import BlockedUser
+import requests
+from django.conf import settings
+from django.contrib import messages
+
 
 # Create your views here.
 def create(request):
@@ -14,17 +20,20 @@ def create(request):
             ip = x_forwarded_for.split(',')[0]
         else:
             ip = request.META.get('REMOTE_ADDR')
-
+        print(ip)
         pskey = data.get('pskey')
 
         if not pskey:
             return redirect('/')
+
+
 
         isBlocked_ip = BlockedUser.objects.filter(ip_address=ip).exists()
         isBlockedFingerprint = BlockedUser.objects.filter(device_identifier=pskey).exists()
 
         if isBlocked_ip or isBlockedFingerprint:
             return redirect('/blocked/')
+
 
 
         category = data.get("category")
@@ -37,7 +46,7 @@ def create(request):
             name = None
             group = None
 
-        text = data['text']
+        content = data['text']
 
         response_method = data['response-method']
         if response_method == 'email':
@@ -49,7 +58,65 @@ def create(request):
 
         publish = True if data.get('publish') else False
 
+        moderation_request = requests.post(settings.MODERATION_REQUEST_URL, data={
+            'text': str(content)
+        })
+        if moderation_request.status_code != 200:
+            messages.error(request, 'Moderation request failed')
+            return redirect(f'/complaints/create/')
+
+        response = moderation_request.json()
+        level = response.get('level')
+
+        is_spam = False
+        needs_review = False
+
+        if level == 1:
+            is_spam = False
+            needs_review = True
+        elif level == 2:
+            is_spam = True
+            needs_review = False
 
 
 
-        return JsonResponse({})
+        user_id = request.session.get('student_id')
+
+        try:
+            user = Students.objects.filter(id=int(user_id)).first()
+        except:
+            user = None
+
+        try:
+            complaint = Complaint.objects.create(user=user,
+                                                 content=content,
+                                                 category=category,
+                                                 user_name=name,
+                                                 user_group=group,
+                                                 is_anonymous=anonymous,
+                                                 email_for_reply=email,
+                                                 reply_code=link,
+                                                 is_public=publish,
+                                                 is_spam=is_spam,
+                                                 needs_review=needs_review,
+                                                 ip_address=ip,
+                                                 device_identifier=pskey
+                                                 )
+            complaint.save()
+
+            if level == 2:
+                try:
+                    block_user = BlockedUser.objects.create(ip_address=ip, device_identifier=pskey,
+                                                            block_reason='Автоматическая блокировка',
+                                                            complaints_spam_id=complaint)
+                    block_user.save()
+                    return redirect('/blocked/')
+                except Exception as e:
+                    print(str(e))
+
+        except Exception as e:
+            messages.error(request, str(e))
+            return redirect(f'/complaints/create/')
+
+        messages.success(request, 'Обращение создано')
+        return redirect('/')

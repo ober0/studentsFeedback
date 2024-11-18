@@ -22,17 +22,6 @@ class UserUnbanRequest(models.Model):
     reviewed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Рассмотрено')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
 
-    def set_ip_address(self, value):
-        self.ip_address = cipher.encrypt(value.encode()).decode()
-
-    def get_ip_address(self):
-        return cipher.decrypt(self.ip_address.encode()).decode()
-
-    def set_device_identifier(self, value):
-        self.device_identifier = cipher.encrypt(value.encode()).decode()
-
-    def get_device_identifier(self):
-        return cipher.decrypt(self.device_identifier.encode()).decode()
 
     class Meta:
         verbose_name = 'Запрос на разбан'
@@ -43,19 +32,10 @@ class BlockedUser(models.Model):
     ip_address = models.CharField(max_length=255, verbose_name='IP-адрес')
     device_identifier = models.CharField(max_length=255, verbose_name='Идентификатор устройства')
     block_reason = models.TextField(verbose_name='Причина блокировки')
+    complaints_spam_id = models.ForeignKey('complaints.Complaint', on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Заблокированное обращение')
     blocked_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата блокировки')
 
-    def set_ip_address(self, value):
-        self.ip_address = cipher.encrypt(value.encode()).decode()
 
-    def get_ip_address(self):
-        return cipher.decrypt(self.ip_address.encode()).decode()
-
-    def set_device_identifier(self, value):
-        self.device_identifier = cipher.encrypt(value.encode()).decode()
-
-    def get_device_identifier(self):
-        return cipher.decrypt(self.device_identifier.encode()).decode()
 
     class Meta:
         verbose_name = 'Заблокированный пользователь'

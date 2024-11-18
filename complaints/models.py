@@ -3,9 +3,6 @@ from cryptography.fernet import Fernet
 from django.conf import settings
 from django.contrib.auth.models import User
 
-
-cipher = Fernet(settings.ENCRYPTION_KEY)
-
 class Complaint(models.Model):
     user = models.ForeignKey('core.Students', on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Пользователь')
     content = models.TextField(verbose_name='Содержание')
@@ -25,18 +22,6 @@ class Complaint(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     response_text = models.TextField(verbose_name='Текст ответа', null=True, blank=True)
     admin = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Администратор')
-
-    def set_ip_address(self, value):
-        self.ip_address = cipher.encrypt(value.encode()).decode()
-
-    def get_ip_address(self):
-        return cipher.decrypt(self.ip_address.encode()).decode()
-
-    def set_device_identifier(self, value):
-        self.device_identifier = cipher.encrypt(value.encode()).decode()
-
-    def get_device_identifier(self):
-        return cipher.decrypt(self.device_identifier.encode()).decode()
 
     def __str__(self):
         return f"Жалоба {self.id}"
