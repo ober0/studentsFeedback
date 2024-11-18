@@ -11,12 +11,15 @@ from .task import send_email
 
 
 
-def student_required(view_func):
-    def wrapper(request, *args, **kwargs):
-        if 'student_mail' not in request.session:
-            return JsonResponse({'auth': False})
-        return view_func(request, *args, **kwargs)
-    return wrapper
+def student_required(redirect_url):
+    def decorator(view_func):
+        def wrapper(request, *args, **kwargs):
+            if 'email' not in request.session or request.session.get('email') == None:
+                return redirect(f'/auth/?next={redirect_url}')
+            return view_func(request, *args, **kwargs)
+        return wrapper
+    return decorator
+
 
 # messages.success(request, 'Вы успешно вошли!')
 
@@ -113,3 +116,8 @@ def create_complaint(request):
 
 def blocked(request):
     return JsonResponse({'data': 'Вы заблокированы'})
+
+@student_required('/complaints/my/')
+def my_complaints(request):
+
+    return JsonResponse({'success': True})
