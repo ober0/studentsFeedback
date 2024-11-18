@@ -119,5 +119,17 @@ def blocked(request):
 
 @student_required('/complaints/my/')
 def my_complaints(request):
+    student_id = request.session.get('student_id')
+    student = Students.objects.filter(id=int(student_id)).first()
+    print(student)
+    complaints = Complaint.objects.filter(user=student, is_spam=False).union(
+        Complaint.objects.filter(email_for_reply=student.email, is_spam=False)
+    ).order_by('-created_at')
+    print(complaints)
+    context = {
+        'complaints': complaints,
+        'user_id': student_id,
+        'email': student.email
+    }
 
-    return JsonResponse({'success': True})
+    return render(request, 'core/my_complaints.html', context)
