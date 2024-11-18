@@ -34,7 +34,8 @@ def index(request):
         user=student_id
     )
 
-    complaints = Complaint.objects.filter(is_published=True).annotate(
+
+    complaints = Complaint.objects.filter(is_published=True, is_spam=False, needs_review=False).annotate(
         like_count=Count('complaintlike'),
         liked=Exists(likes_subquery)
     )
@@ -121,11 +122,11 @@ def blocked(request):
 def my_complaints(request):
     student_id = request.session.get('student_id')
     student = Students.objects.filter(id=int(student_id)).first()
-    print(student)
+
     complaints = Complaint.objects.filter(user=student, is_spam=False).union(
         Complaint.objects.filter(email_for_reply=student.email, is_spam=False)
     ).order_by('-created_at')
-    print(complaints)
+
     context = {
         'complaints': complaints,
         'user_id': student_id,
