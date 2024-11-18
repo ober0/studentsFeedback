@@ -137,9 +137,18 @@ def my_complaints(request):
     student_id = request.session.get('student_id')
     student = Students.objects.filter(id=int(student_id)).first()
 
-    complaints = Complaint.objects.filter(user=student, is_spam=False).union(
-        Complaint.objects.filter(email_for_reply=student.email, is_spam=False)
-    ).order_by('-created_at')
+    search_query = request.GET.get('search', '')
+
+
+
+    complaints1 = Complaint.objects.filter(user=student, is_spam=False).filter(
+        Q(content__icontains=search_query) | Q(category__icontains=search_query)
+    )
+    complaints2 = Complaint.objects.filter(email_for_reply=student.email, is_spam=False).filter(
+        Q(content__icontains=search_query) | Q(category__icontains=search_query)
+    )
+    complaints = complaints1.union(complaints2).order_by('-created_at')[:100]
+
 
     context = {
         'complaints': complaints,
