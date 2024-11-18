@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from .models import BlockedUser
-
+from complaints.models import Complaint
 
 # @user_passes_test(lambda u: u.is_superuser, login_url='/admin/login/')
 
@@ -25,6 +25,15 @@ def check_fingerprint(request):
                 blockedFingerprint.save()
             except Exception as e:
                 print(f"Error updating BlockedUser: {e}")
+
+            try:
+                complaints = Complaint.objects.filter(device_identifier=old_fingerprint).all()
+                for complaint in complaints:
+                    complaint.device_identifier = fingerprint
+                    complaint.save()
+            except:
+                pass
+
 
         isBlocked_ip = BlockedUser.objects.filter(ip_address=ip).exists()
         isBlockedFingerprint = BlockedUser.objects.filter(device_identifier=fingerprint).exists()

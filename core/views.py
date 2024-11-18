@@ -77,12 +77,11 @@ def send_code(request):
 def check_code(request):
     if request.method == 'POST':
         next = request.POST.get('next')
+        print(next)
         code_input = request.POST.get('code')
         email = request.POST.get('email')
         code = r.get(email).decode('utf-8')
 
-        print(code)
-        print(code_input)
         if code == code_input:
             try:
                 student = Students.objects.filter(email=email).first()
