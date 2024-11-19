@@ -130,8 +130,9 @@ def create_complaint(request):
 
 
 def blocked(request):
-    return JsonResponse({'data': 'Вы заблокированы'})
+    return render(request, 'core/blocked.html')
 
+    
 @student_required('/complaints/my/')
 def my_complaints(request):
     student_id = request.session.get('student_id')

@@ -1,9 +1,11 @@
 from django.contrib.auth.decorators import user_passes_test
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
-from .models import BlockedUser
+from .models import BlockedUser, UserUnbanRequest
 from complaints.models import Complaint
+from django.db.models import Q
+from django.contrib import messages
 
 # @user_passes_test(lambda u: u.is_superuser, login_url='/admin/login/')
 
@@ -54,3 +56,55 @@ def check_fingerprint(request):
             return JsonResponse({'isBlocked': True})
         else:
             return JsonResponse({'isBlocked': False})
+
+
+def load_banned_complaint(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+
+    fingerprint = request.POST.get('visitorId')
+
+    try:
+        blockedUser = BlockedUser.objects.filter(Q(ip_address=ip) | Q(device_identifier=fingerprint)).order_by('-blocked_at').first()
+        complaint = blockedUser.complaints_spam_id
+    except:
+        print(1)
+        return JsonResponse({'success': False, 'redirect': '/'})
+
+    return JsonResponse({
+        'success': True,
+        'id': complaint.id,
+        'category': complaint.category,
+        'content': complaint.content,
+        'reason': blockedUser.block_reason
+    })
+
+
+def unban_request(request):
+    if request.method == 'POST':
+        data = request.POST
+
+        request_text = data.get('text')
+        complaint_id = data.get('complaint_id')
+        fingerprint = data.get('device_identifier')
+
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            ip = x_forwarded_for.split(',')[0]
+        else:
+            ip = request.META.get('REMOTE_ADDR')
+
+        complaint = Complaint.objects.filter(id=complaint_id).first()
+
+        try:
+            userUnbanRequest = UserUnbanRequest.objects.create(ip_address=ip, device_identifier=fingerprint, complaint=complaint, request_text=request_text)
+            userUnbanRequest.save()
+
+            messages.success(request, 'Успешно. В случае одобрения заявки вы будете разблокированы.')
+            return redirect('/')
+        except:
+            messages.error(request, 'Создать заявку не удалось. Попробуйте снова')
+            return redirect('/blocked/')
