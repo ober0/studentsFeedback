@@ -19,9 +19,12 @@
 
     {{ complaint.created_at }}
 
-<form action="/update/response/add/{{ complaint.id }}/" method="post">
+<form action="/complaints/update/response/add/{{ complaint.id }}/" method="post">
     {% csrf_token %}
-    <textarea name="response" id="response" placeholder="Ответ"></textarea>
+    <textarea name="response_text" id="response" placeholder="Ответ"></textarea>
+    {% if complaint.is_public %}
+    <input type="checkbox" name="is_published" id="published">
+    {% endif %}
     <input type="submit" value="Отправить ответ">
 </form>
 

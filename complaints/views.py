@@ -9,7 +9,7 @@ from manage.models import BlockedUser
 import requests
 from django.conf import settings
 from django.contrib import messages
-
+from core.task import send_email
 
 # Create your views here.
 def create(request):
@@ -135,7 +135,25 @@ def delete(request, id):
             messages.error(request, 'Ошибка при удалении записи.')
             return JsonResponse({'success': False})
 
-
-def add_response(request):
+@login_required(login_url='/admin/login/')
+def add_response(request, id):
     if request.method == 'POST':
-        return JsonResponse({})
+        is_published = request.POST.get('is_published')
+        response_text = request.POST.get('response_text')
+        print(is_published)
+        try:
+            complaint = Complaint.objects.get(id=id)
+            complaint.status = 'closed'
+            complaint.needs_review = False
+            complaint.is_published = (is_published == 'on')
+            complaint.response_text = response_text
+            complaint.admin = request.user
+            complaint.save()
+
+            if complaint.email_for_reply is not None:
+                header = f'Ответ на обращение #{complaint.id} на сайте ks54'
+                send_email.delay(email=complaint.email_for_reply, text=response_text, header=header)
+        except:
+            messages.error(request, 'Ошибка.')
+
+        return redirect('/manage/complaint/open/')
