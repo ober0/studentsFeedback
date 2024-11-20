@@ -197,20 +197,18 @@ def close_complaints(request):
 @login_required(login_url='/admin/login/')
 def complaint(request, id):
     complaint = Complaint.objects.get(id=id)
+    context = {
+        'complaint': complaint,
+    }
 
     if complaint.status == 'open':
 
         user_name = request.user.first_name
         if not user_name:
             user_name = 'admin'
-
-        context = {
-            'complaint': complaint,
-        }
-
         return render(request, 'manage/complaint_open.html', context)
     else:
-        return render(request, 'manage/complaint_close.html')
+        return render(request, 'manage/complaint_close.html', context)
 @login_required(login_url='/admin/login/')
 def ban(request, id):
     if request.method == 'POST':
