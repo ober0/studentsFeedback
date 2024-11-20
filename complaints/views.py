@@ -132,4 +132,10 @@ def delete(request, id):
             complain.save()
             return JsonResponse({'success': True})
         except:
+            messages.error(request, 'Ошибка при удалении записи.')
             return JsonResponse({'success': False})
+
+
+def add_response(request):
+    if request.method == 'POST':
+        return JsonResponse({})

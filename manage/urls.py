@@ -10,4 +10,5 @@ urlpatterns = [
     path('complaint/open/need_review/', views.open_need_review_complaints, name='open_need_review_complaints'),
     path('complaint/close/', views.close_complaints, name='close_complaints'),
     path('complaint/<int:id>/', views.complaint),
+    path('ban/<int:id>/', views.ban),
 ]

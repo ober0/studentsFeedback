@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +6,7 @@
     <title>Обращение #{{ complaint.id }}</title>
 </head>
 <body>
+<input type="hidden" id="id" value="{{ complaint.id }}">
 {{ complaint.category }}
     {{ complaint.content }}
 

@@ -198,12 +198,40 @@ def close_complaints(request):
 def complaint(request, id):
     complaint = Complaint.objects.get(id=id)
 
-    user_name = request.user.first_name
-    if not user_name:
-        user_name = 'admin'
+    if complaint.status == 'open':
 
-    context = {
-        'complaint': complaint,
-    }
+        user_name = request.user.first_name
+        if not user_name:
+            user_name = 'admin'
 
-    return render(request, 'manage/complaint.html', context)
+        context = {
+            'complaint': complaint,
+        }
+
+        return render(request, 'manage/complaint_open.html', context)
+    else:
+        return render(request, 'manage/complaint_close.html')
+@login_required(login_url='/admin/login/')
+def ban(request, id):
+    if request.method == 'POST':
+        reason = request.POST.get('reason')
+        if not reason:
+            reason = 'Заблокирован администратором'
+
+        try:
+            complaint = Complaint.objects.get(id=id)
+
+            ip = complaint.ip_address
+            fingerprint = complaint.device_identifier
+
+            complaint.is_spam = True
+            complaint.status = 'closed'
+            complaint.save()
+
+            block_user = BlockedUser.objects.create(ip_address=ip, device_identifier=fingerprint, block_reason=reason, complaints_spam_id=complaint)
+            block_user.save()
+            return JsonResponse({'success':True})
+
+        except Exception as e:
+            messages.error(request, f'Ошибка! {str(e)}')
+            return JsonResponse({'success': False})
