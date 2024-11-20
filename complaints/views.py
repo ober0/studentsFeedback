@@ -151,8 +151,13 @@ def add_response(request, id):
             complaint.save()
 
             if complaint.email_for_reply is not None:
+
                 header = f'Ответ на обращение #{complaint.id} на сайте ks54'
-                send_email.delay(email=complaint.email_for_reply, text=response_text, header=header)
+                text = f'''Ответ администратора:
+{response_text}
+Посмотреть обращения можно на {settings.VIEW_COMPLAINTS_URL}
+                '''
+                send_email.delay(email=complaint.email_for_reply, text=text, header=header)
         except:
             messages.error(request, 'Ошибка.')
 

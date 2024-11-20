@@ -147,3 +147,5 @@ EMAIL_HOST_PASSWORD = 'lkmvlfzmkrpbxxkx'
 DEFAULT_FROM_EMAIL = 'AbuBandit1112@yandex.ru'
 
 MODERATION_REQUEST_URL = 'http://127.0.0.1:8000/moderation/auto-check/'
+
+VIEW_COMPLAINTS_URL = 'http://127.0.0.1:8000/complaints/my/'
