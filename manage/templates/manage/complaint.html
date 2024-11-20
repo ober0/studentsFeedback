@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Обращение #{{ complaint.id }}</title>
+</head>
+<body>
+{{ complaint.category }}
+    {{ complaint.content }}
+
+    {% if complaint.is_anonymous == False %}
+        {{ complaint.user_name }}
+        {{ complaint.user_group }}
+    {% else %}
+        Анонимно
+    {% endif %}
+
+    {{ complaint.created_at }}
+
+
+</body>
+</html>

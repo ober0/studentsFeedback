@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .tr-comp{
+            cursor: pointer;
+        }
+        .tr-comp:hover{
+            background-color: lightblue;
+        }
+    </style>
+    <title>Title</title>
+</head>
+<body>
+    <div class="btns">
+        <a href="{% url 'open_complaints' %}">Открытые</a>
+        <a href="{% url 'open_need_review_complaints' %}">Спам</a>
+        <a href="{% url 'close_complaints' %}">Закрытые</a>
+    </div>
+    <br>
+    <table>
+        <thead>
+            <tr>
+                <th>№</th>
+                <th>Категория</th>
+                <th>Имя</th>
+                <th>Группа</th>
+                <th>Создана</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for complaint in complaints %}
+            <tr class="tr-comp" id="{{ complaint.id }}">
+                <td>{{ complaint.id }}</td>
+                <td>{{ complaint.category }}</td>
+                <td>
+                    {% if complaint.is_anonymous == False %}
+                        {{ complaint.user_name }}
+                    {% else %}
+                        Анонимно
+                    {% endif %}
+                </td>
+                <td>
+                    {% if complaint.is_anonymous == False %}
+                        {{ complaint.user_group }}
+                    {% else %}
+                        Анонимно
+                    {% endif %}
+                </td>
+                <td>{{ complaint.created_at }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</body>
+<script>
+    document.querySelectorAll('.tr-comp').forEach(btn => {
+        btn.addEventListener('click', function () {
+            let id = btn.id
+            window.location.href = `/manage/complaint/${id}/`
+        })
+    })
+</script>
+</html>

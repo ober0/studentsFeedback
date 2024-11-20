@@ -1,4 +1,4 @@
-from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
@@ -7,7 +7,6 @@ from complaints.models import Complaint
 from django.db.models import Q
 from django.contrib import messages
 
-# @user_passes_test(lambda u: u.is_superuser, login_url='/admin/login/')
 
 @csrf_exempt
 def check_fingerprint(request):
@@ -108,3 +107,103 @@ def unban_request(request):
         except:
             messages.error(request, 'Создать заявку не удалось. Попробуйте снова')
             return redirect('/blocked/')
+
+@login_required(login_url='/admin/login/')
+def open_complaints(request):
+    page = 'Открытые обращения'
+    category = request.GET.get('category')
+
+    user_name = request.user.first_name
+    if not user_name:
+        user_name = 'admin'
+
+    category = request.GET.get('category')
+    filters = {
+        'status': 'open',
+        'is_spam': False,
+        'needs_review': False
+    }
+
+    if category:
+        filters['category'] = category
+
+    complaints = Complaint.objects.filter(**filters).order_by('-created_at')
+
+    context = {
+        'complaints': complaints,
+        'user_name': user_name,
+        'page': page,
+    }
+    return render(request, 'manage/complaints_list.html', context)
+
+
+@login_required(login_url='/admin/login/')
+def open_need_review_complaints(request):
+    page = 'Спам'
+    category = request.GET.get('category')
+
+    user_name = request.user.first_name
+    if not user_name:
+        user_name = 'admin'
+
+    category = request.GET.get('category')
+    filters = {
+        'status': 'open',
+        'is_spam': False,
+        'needs_review': True
+    }
+
+    if category:
+        filters['category'] = category
+
+    complaints = Complaint.objects.filter(**filters).order_by('-created_at')
+
+    context = {
+        'complaints': complaints,
+        'user_name': user_name,
+        'page': page,
+    }
+    return render(request, 'manage/complaints_list.html', context)
+
+
+@login_required(login_url='/admin/login/')
+def close_complaints(request):
+    page = 'Закрытые'
+    category = request.GET.get('category')
+
+    user_name = request.user.first_name
+    if not user_name:
+        user_name = 'admin'
+
+    category = request.GET.get('category')
+    filters = {
+        'status': 'closed',
+        'is_spam': False,
+    }
+
+    if category:
+        filters['category'] = category
+
+    complaints = Complaint.objects.filter(**filters).order_by('-created_at')
+
+    context = {
+        'complaints': complaints,
+        'user_name': user_name,
+        'page': page,
+    }
+    return render(request, 'manage/complaints_list.html', context)
+
+
+@login_required(login_url='/admin/login/')
+def complaint(request, id):
+    complaint = Complaint.objects.get(id=id)
+
+    user_name = request.user.first_name
+    if not user_name:
+        user_name = 'admin'
+
+    context = {
+        'complaint': complaint,
+    }
+
+    return render(request, 'manage/complaint.html', context)
