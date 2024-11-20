@@ -1,4 +1,6 @@
 import secrets
+
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from core.models import Students
@@ -120,3 +122,14 @@ def create(request):
 
         messages.success(request, 'Обращение создано')
         return redirect('/')
+
+@login_required(login_url='/admin/login/')
+def delete(request, id):
+    if request.method == 'POST':
+        try:
+            complain = Complaint.objects.filter(id=id).first()
+            complain.delete()
+            complain.save()
+            return JsonResponse({'success': True})
+        except:
+            return JsonResponse({'success': False})
