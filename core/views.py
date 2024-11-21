@@ -30,11 +30,12 @@ def index(request):
     # likes or time
     sort = request.GET.get('filter')
     if sort == 'time':
-        sort = '-created_at'
+        sort_query = '-created_at'
     elif sort == 'likes':
-        sort = '-like_count'
+        sort_query = '-like_count'
     else:
-        sort = '-created_at'  # default filter
+        sort = 'time'
+        sort_query = '-created_at'  # default filter
 
     search_query = request.GET.get('search', '')
 
@@ -51,11 +52,13 @@ def index(request):
     ).annotate(
         like_count=Count('complaintlike'),
         liked=Exists(likes_subquery)
-    ).order_by(sort)[:100]
+    ).order_by(sort_query)[:100]
 
     context = {
         'complaints': complaints,
         'email': email,
+        'search': search_query,
+        'filter': sort,
         'student_id': student_id,
         'auth': True if student_id else False
     }
