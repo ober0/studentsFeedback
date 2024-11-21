@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from core.models import Students
-from complaints.models import Complaint
+from complaints.models import Complaint, ComplaintLike
 from manage.models import BlockedUser
 import requests
 from django.conf import settings
@@ -162,3 +162,38 @@ def add_response(request, id):
             messages.error(request, 'Ошибка.')
 
         return redirect('/manage/complaint/open/')
+
+def like(request):
+    if request.method == 'POST':
+        student_id = request.session.get('student_id')
+        if student_id:
+            cid = request.POST.get('cid')
+            try:
+                complaint = Complaint.objects.get(id=cid)
+                student = Students.objects.get(id=student_id)
+                like = ComplaintLike.objects.create(complaint=complaint, user=student)
+                like.save()
+                return JsonResponse({'success': True})
+            except Exception as e:
+                messages.error(request, str(e))
+                return JsonResponse({'success': False, 'error': str(e)})
+
+        else:
+            return JsonResponse({'success': False, 'error': 'NotAuth'})
+
+def unlike(request):
+    if request.method == 'POST':
+        student_id = request.session.get('student_id')
+        if student_id:
+            cid = request.POST.get('cid')
+            try:
+                complaint = Complaint.objects.get(id=cid)
+                student = Students.objects.get(id=student_id)
+                like = ComplaintLike.objects.filter(user=student, complaint=complaint).first()
+                like.delete()
+                return JsonResponse({'success': True})
+            except Exception as e:
+                messages.error(request, str(e))
+                return JsonResponse({'success': False, 'error': str(e)})
+        else:
+            return JsonResponse({'success': False, 'error': 'NotAuth'})

@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,10 +6,12 @@
     <title>Title</title>
 </head>
 <body>
+    {% csrf_token %}
     {{ email }}
     {{ auth }}
     <br>
     {% for complaint in complaints %}
+        <div class="complaint" cid="{{ complaint.id }}">
         {{ complaint.id }}
         {{ complaint.category }}
         {{ complaint.content }}
@@ -25,10 +28,17 @@
         {% else %}
             Нет ответа
         {% endif %}
-        {{ complaint.like_count }}
-        {{ complaint.liked }}
+        <p id="counter-{{ complaint.id }}">{{ complaint.like_count }}</p>
+
+        {% if complaint.liked == True %}
+            <button id="unlike" style="background-color: red">unlike</button>
+        {% else %}
+            <button id="like" style="background-color: gray">like</button>
+        {% endif %}
         <br>
+        </div>
     {% endfor %}
 
 </body>
+<script src="{% static 'core/js/like-logic.js' %}"></script>
 </html>
