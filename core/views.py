@@ -26,7 +26,6 @@ def student_required(redirect_url):
 
 
 def index(request):
-
     # likes or time
     sort = request.GET.get('filter')
     if sort == 'time':
@@ -35,7 +34,7 @@ def index(request):
         sort_query = '-like_count'
     else:
         sort = 'time'
-        sort_query = '-created_at'  # default filter
+        sort_query = '-created_at'
 
     search_query = request.GET.get('search', '')
 
