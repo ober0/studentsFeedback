@@ -1,0 +1,60 @@
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.navbar-nav {
+  flex: 1;
+  justify-content: right;
+}
+
+.navbar-text {
+  margin-left: auto;
+}
+
+
+/* Футер */
+footer {
+  background-color: #343a40;
+  color: #fff;
+  padding: 3rem 2rem;
+  font-size: 1.1rem;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.footer-logo {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.footer-links a {
+  margin-right: 1.5rem;
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.2rem;
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+}
+
+.navbar-nav.mx-auto {
+    justify-content: center;
+    flex: 1;
+}
+
+@media (max-width: 992px) {
+    .navbar-nav{
+      text-align: center;
+    }
+}

@@ -1,0 +1,38 @@
+main {
+  flex: 1;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1rem 0;
+}
+@media (max-width: 768px) {
+  .input-group{
+    margin-bottom: 10px;
+  }
+}
+
+h1{
+  font-size: 30px;
+}
+
+
+input:focus,button:focus,select:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.like-press{
+  border-radius: 4px !important;
+  border: 1px solid red !important;
+  background-color: red !important;
+}
+.like-press:hover {
+  border: gray;
+}
+.like-no-press{
+  border-radius: 4px !important;
+  border: 1px solid gray !important;
+}
+.like-no-press:hover{
+  border: red;
+}

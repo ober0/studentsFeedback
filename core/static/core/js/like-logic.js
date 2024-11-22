@@ -1,5 +1,5 @@
 function like(btn) {
-    let cid = btn.parentNode.getAttribute('cid');
+    let cid = btn.parentElement.parentElement.parentElement.parentElement.getAttribute('cid')
 
     let formData = new FormData();
     formData.append('cid', cid);
@@ -24,8 +24,8 @@ function like(btn) {
                 }
 
                 btn.id = 'unlike';
-                btn.style.backgroundColor = 'red';
-                btn.innerText = 'unlike'
+                btn.classList.remove('like-no-press')
+                btn.classList.add('like-press')
             } else {
                 if (result.error === 'NotAuth') {
                     window.location.href = '/auth/?next=/';
@@ -35,7 +35,7 @@ function like(btn) {
 }
 
 function unlike(btn) {
-    let cid = btn.parentNode.getAttribute('cid');
+    let cid = btn.parentElement.parentElement.parentElement.parentElement.getAttribute('cid')
 
     let formData = new FormData();
     formData.append('cid', cid);
@@ -60,8 +60,8 @@ function unlike(btn) {
                 }
 
                 btn.id = 'like';
-                btn.style.backgroundColor = 'gray';
-                btn.innerText = 'like'
+                btn.classList.add('like-no-press')
+                btn.classList.remove('like-press')
             } else {
                 if (result.error === 'NotAuth') {
                     window.location.href = '/auth/?next=/';
@@ -80,5 +80,6 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (event.target && event.target.id == 'unlike'){
             unlike(event.target)
         }
+
     });
 });
