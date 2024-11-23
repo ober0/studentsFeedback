@@ -1,4 +1,6 @@
 import random
+import secrets
+
 from django.db.models import Q
 from django.db.models import Count, Subquery, OuterRef, Exists
 from django.http import JsonResponse
@@ -124,11 +126,14 @@ def check_code(request):
 def create_complaint(request):
     user_id = request.session.get('student_id')
     user = Students.objects.filter(id=user_id).first()
+    link = secrets.token_hex(32)
+    link_url = settings.COMPLAINTS_VIEW_URL + link + '/'
+
     try:
         email = user.email
     except:
         email = None
-    return render(request, 'core/create_complaint.html', {'email': email, 'user_id': user_id})
+    return render(request, 'core/create_complaint.html', {'email': email, 'user_id': user_id, 'link': link, 'link_url': link_url})
 
 
 def blocked(request):

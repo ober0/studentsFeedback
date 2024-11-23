@@ -8,6 +8,7 @@
     <style>
         .hidden { display: none; }
         .disabled { background-color: #f0f0f0; cursor: not-allowed; }
+
     </style>
 </head>
 <body>
@@ -68,6 +69,8 @@
         <label for="response-link">Ответ по ссылке:</label>
         <input type="radio" id="response-link" name="response-method" value="link"><br><br>
 
+        <input type="hidden" name="link" value="{{ link }}">
+        <p class="link hidden">{{ link_url }}</p>
 
         <!-- Флаг "Разрешить публикацию" -->
         <label for="publish">Разрешить публикацию на доске:</label>

@@ -14,4 +14,4 @@ def send_email(email, text, header):
         send_mail(subject=str(subject), message=str(message), from_email=from_email, recipient_list=recipient_list)
         return {'success': True}
     except Exception as e:
-        return {'success': f'{e}'}
+        return {'success': f'{e}', 'email': recipient_list}

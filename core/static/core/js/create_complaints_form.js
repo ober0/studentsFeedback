@@ -18,11 +18,14 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('input[name="response-method"]').forEach(function(radioButton) {
         radioButton.addEventListener('change', function() {
             const emailField = document.getElementById('email-field');
+            const linkValue = document.querySelector('.link');
             if (document.getElementById('response-email').checked) {
                 emailField.classList.remove('hidden');
+                linkValue.classList.add('hidden');
                 document.getElementById('email').required = true;
             } else {
                 emailField.classList.add('hidden');
+                linkValue.classList.remove('hidden');
                 document.getElementById('email').required = false;
             }
         });

@@ -55,7 +55,7 @@ def create(request):
             email = data['email']
             link = None
         else:
-            link = secrets.token_hex(24)
+            link = request.POST.get('link')
             email = None
 
         publish = True if data.get('publish') else False
@@ -198,3 +198,12 @@ def unlike(request):
                 return JsonResponse({'success': False, 'error': str(e)})
         else:
             return JsonResponse({'success': False, 'error': 'NotAuth'})
+
+
+def complaint(request, key):
+    complaint = Complaint.objects.filter(reply_code=key).first()
+    print(complaint.category)
+    if complaint:
+        context = {'complaint': complaint}
+        return render(request, 'core/complaint_view.html', context)
+    return redirect('index')

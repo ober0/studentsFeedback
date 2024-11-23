@@ -8,4 +8,5 @@ urlpatterns = [
     path('update/response/add/<int:id>/', views.add_response),
     path('like/', views.like, name='like'),
     path('unlike/', views.unlike, name='unlike'),
+    path('<str:key>/', views.complaint, name='complaint'),
 ]
