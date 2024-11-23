@@ -12,7 +12,7 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav mx-auto text-center">
+      <ul style="justify-content: left" class="navbar-nav mx-auto text-center">
         <li class="nav-item">
           <a class="nav-link" href="{% url 'index' %}">Главная</a>
         </li>
@@ -24,7 +24,8 @@
         </li>
       </ul>
       <!-- Кнопки справа -->
-      <ul class="navbar-nav">
+        <hr>
+      <ul class="navbar-nav" style="align-items: center">
           {% if auth == False %}
         <li class="nav-item">
           <a class="nav-link" href="{% url 'auth' %}">Войти</a>
@@ -35,6 +36,9 @@
         </li>
         <li class="nav-item">
           <p style="margin-bottom: 0" class="nav-link">{{ email}}</p>
+        </li>
+        <li class="nav-item user-logo">
+          <img style="margin-bottom: 0" width="45" src="{% static 'core/img/user.png' %}" class="nav-link">
         </li>
           {% endif %}
       </ul>

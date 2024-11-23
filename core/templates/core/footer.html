@@ -8,11 +8,18 @@
       <p>© 2023 Колледж связи 54.</p>
       <p>Все права защищены.</p>
       <p>Почта для связи: <a href="mailto:contact@ks54.ru" class="text-decoration-none text-primary">contact@ks54.ru</a></p>
+       Телефон для связи: <a href="tel:+74951341234">8 (495) 134-12-34</a>
     </div>
-    <div class="footer-links  gap-3">
-      <a href="https://vk.com/ks54" class="text-decoration-none">ВКонтакте</a>
-      <a href="https://t.me/ks54" class="text-decoration-none">Telegram</a>
-      <a href="#" class="text-decoration-none">Поддержка</a>
+    <div class="footer-links">
+      <p><a href="{% url 'index' %}" class="text-decoration-none">Главная</a></p>
+      <p><a href="{% url 'my_complaints' %}" class="text-decoration-none">Мои обращения</a></p>
+      <p><a href="{% url 'create_complaint' %}" class="text-decoration-none">Создать обращение</a></p>
+      <p style="margin-bottom: 0"><a href="{% url 'manage' %}" class="text-decoration-none">Для работников</a></p>
+    </div>
+    <div class="footer-links">
+      <a href="https://vk.com/ks54ru" style="margin-right: 5px !important;" class="text-decoration-none"><img width="38px" src="{% static 'core/img/vk.png' %}" alt=""></a>
+      <a href="https://t.me/ks54ru" style="margin-right: 5px !important;" class="text-decoration-none"><img width="38px" src="{% static 'core/img/telegram.png' %}" alt=""></a>
+      <a href="https://ks54.ru" style="margin-right: 5px !important;" class="text-decoration-none"><img width="38px" src="{% static 'core/img/website.png' %}" alt=""></a>
     </div>
   </div>
 </footer>

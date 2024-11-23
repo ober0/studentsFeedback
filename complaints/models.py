@@ -24,7 +24,7 @@ class Complaint(models.Model):
     admin = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Администратор')
 
     def __str__(self):
-        return f"Жалоба {self.id}"
+        return f"Обращение {self.id}"
 
     class Meta:
         verbose_name = 'Обращени'

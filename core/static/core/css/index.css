@@ -9,10 +9,11 @@ main {
   .input-group{
     margin-bottom: 10px;
   }
+
 }
 
-h1{
-  font-size: 30px;
+#text-28{
+  font-size: 28px !important;
 }
 
 
@@ -22,17 +23,37 @@ input:focus,button:focus,select:focus {
 }
 
 .like-press{
-  border-radius: 4px !important;
-  border: 1px solid red !important;
-  background-color: red !important;
+  fill: red;
+  stroke:red;
+  stroke-width: 1.5px;
 }
-.like-press:hover {
-  border: gray;
-}
+
 .like-no-press{
-  border-radius: 4px !important;
-  border: 1px solid gray !important;
+  fill: none;
+  stroke:black;
+  stroke-width: 1.5px;
 }
-.like-no-press:hover{
-  border: red;
+
+
+
+
+svg{
+  cursor: pointer;
+}
+
+@media (max-width: 992px) {
+  .user-logo{
+    display: none;
+  }
+}
+
+.like-btn{
+  display: flex;
+  gap:5px;
+  border-radius: 20px;
+  border: 1px solid gray;
+  padding: 3px 10px;
+  width: fit-content;
+  align-items: center;
+  cursor: pointer;
 }

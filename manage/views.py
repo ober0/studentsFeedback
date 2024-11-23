@@ -233,3 +233,7 @@ def ban(request, id):
         except Exception as e:
             messages.error(request, f'Ошибка! {str(e)}')
             return JsonResponse({'success': False})
+
+@login_required(login_url='/admin/login/')
+def index(request):
+    return redirect('open_complaints')

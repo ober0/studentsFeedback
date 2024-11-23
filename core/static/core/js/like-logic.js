@@ -1,18 +1,18 @@
-function like(btn) {
-    let cid = btn.parentElement.parentElement.parentElement.parentElement.getAttribute('cid')
+ function like(btn) {
+        let cid = btn.closest('[cid]').getAttribute('cid');  // Получаем cid, используем closest для нахождения родителя
 
-    let formData = new FormData();
-    formData.append('cid', cid);
+        let formData = new FormData();
+        formData.append('cid', cid);  // Отправляем id жалобы
 
-    const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+        const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
 
-    fetch('/complaints/like/', {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': csrfToken
-        },
-        body: formData
-    })
+        fetch('/complaints/like/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
+            body: formData
+        })
         .then(response => response.json())
         .then(result => {
             if (result.success) {
@@ -24,31 +24,34 @@ function like(btn) {
                 }
 
                 btn.id = 'unlike';
-                btn.classList.remove('like-no-press')
-                btn.classList.add('like-press')
+
+                let like = btn.querySelector('.like-svg')
+                like.classList.remove('like-no-press')
+                like.classList.add('like-press')
             } else {
                 if (result.error === 'NotAuth') {
                     window.location.href = '/auth/?next=/';
                 }
             }
         });
-}
+    }
 
-function unlike(btn) {
-    let cid = btn.parentElement.parentElement.parentElement.parentElement.getAttribute('cid')
 
-    let formData = new FormData();
-    formData.append('cid', cid);
+    function unlike(btn) {
+        let cid = btn.closest('[cid]').getAttribute('cid');
 
-    const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+        let formData = new FormData();
+        formData.append('cid', cid);
 
-    fetch('/complaints/unlike/', {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': csrfToken
-        },
-        body: formData
-    })
+        const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+
+        fetch('/complaints/unlike/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
+            body: formData
+        })
         .then(response => response.json())
         .then(result => {
             if (result.success) {
@@ -60,26 +63,31 @@ function unlike(btn) {
                 }
 
                 btn.id = 'like';
-                btn.classList.add('like-no-press')
-                btn.classList.remove('like-press')
+
+                let like = btn.querySelector('.like-svg')
+                like.classList.add('like-no-press')
+                like.classList.remove('like-press')
             } else {
                 if (result.error === 'NotAuth') {
                     window.location.href = '/auth/?next=/';
                 }
             }
         });
-}
+    }
 
 
-
-document.addEventListener('DOMContentLoaded', () => {
-    document.body.addEventListener('click', function(event) {
-        if (event.target && event.target.id === 'like') {
-            like(event.target);
-        }
-        else if (event.target && event.target.id == 'unlike'){
-            unlike(event.target)
-        }
-
+    document.addEventListener('DOMContentLoaded', () => {
+        document.body.addEventListener('click', function(event) {
+            // Получаем кнопку с классом like-btn
+            let btn = event.target.closest('.like-btn');
+            
+            if (btn) {
+                if (btn.id === 'like') {
+                    like(btn);
+                }
+                else if (btn.id === 'unlike') {
+                    unlike(btn);
+                }
+            }
+        });
     });
-});
