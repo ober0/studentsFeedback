@@ -133,6 +133,7 @@ def open_complaints(request):
         'complaints': complaints,
         'user_name': user_name,
         'page': page,
+        'category': category
     }
     return render(request, 'manage/complaints_list.html', context)
 
@@ -162,6 +163,7 @@ def open_need_review_complaints(request):
         'complaints': complaints,
         'user_name': user_name,
         'page': page,
+        'category': category
     }
     return render(request, 'manage/complaints_list.html', context)
 
@@ -190,6 +192,7 @@ def close_complaints(request):
         'complaints': complaints,
         'user_name': user_name,
         'page': page,
+        'category': category
     }
     return render(request, 'manage/complaints_list.html', context)
 

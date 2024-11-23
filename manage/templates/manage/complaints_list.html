@@ -18,6 +18,19 @@
         <a href="{% url 'open_need_review_complaints' %}">Спам</a>
         <a href="{% url 'close_complaints' %}">Закрытые</a>
     </div>
+    <select id="category" name="category">
+        <option value="" {% if category == None or category == '' %}selected{% endif %}>Все</option>
+        <option value="Жалоба" {% if category == 'Жалоба' %}selected{% endif %}>Жалоба</option>
+        <option value="Вопрос" {% if category == 'Вопрос' %}selected{% endif %}>Вопрос</option>
+        <option value="Проблемы с преподавателем" {% if category == 'Проблемы с преподавателем' %}selected{% endif %}>Проблемы с преподавателем</option>
+        <option value="Столовая" {% if category == 'Столовая' %}selected{% endif %}>Столовая</option>
+        <option value="Проблемы с расписанием" {% if category == 'Проблемы с расписанием' %}selected{% endif %}>Проблемы с расписанием</option>
+        <option value="Предложение мероприятия" {% if category == 'Предложение мероприятия' %}selected{% endif %}>Предложение мероприятия</option>
+        <option value="Здоровье и безопасность" {% if category == 'Здоровье и безопасность' %}selected{% endif %}>Здоровье и безопасность</option>
+        <option value="Вопросы карьеры и стажировки" {% if category == 'Вопросы карьеры и стажировки' %}selected{% endif %}>Вопросы карьеры и стажировки</option>
+        <option value="Другое" {% if category == 'Другое' %}selected{% endif %}>Другое</option>
+
+    </select>
     <br>
     <table>
         <thead>
@@ -61,5 +74,18 @@
             window.location.href = `/manage/complaint/${id}/`
         })
     })
+
+    document.getElementById('category').addEventListener('change', function() {
+        let category = this.value
+
+        const currentUrl = window.location.href;
+
+        if (currentUrl.includes('?')) {
+            window.location.href = currentUrl.replace(/([?&])category=[^&]*/, `$1category=${category}`);
+        } else {
+            window.location.href = `${currentUrl}?category=${category}`;
+        }
+
+});
 </script>
 </html>
