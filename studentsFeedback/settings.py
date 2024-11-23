@@ -26,7 +26,7 @@ ENCRYPTION_KEY = 'HPfw6Tsve7-d9j9zAyirgHRGC1sATzBVMneYgf_9I3I='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -146,6 +146,7 @@ EMAIL_HOST_USER = 'AbuBandit1112@yandex.ru'
 EMAIL_HOST_PASSWORD = 'lkmvlfzmkrpbxxkx'
 DEFAULT_FROM_EMAIL = 'AbuBandit1112@yandex.ru'
 
-MODERATION_REQUEST_URL = 'http://127.0.0.1:8000/moderation/auto-check/'
+MODERATION_REQUEST_URL = 'http://192.168.139.137:5000/moderation/auto-check/'
 
-VIEW_COMPLAINTS_URL = 'http://127.0.0.1:8000/complaints/my/'
+VIEW_COMPLAINTS_URL = 'http://192.168.139.137:5000/complaints/my/'
+MAX_COMPLAINTS_IN_MAIN_PAGE = 30

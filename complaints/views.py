@@ -68,8 +68,9 @@ def create(request):
             return redirect(f'/complaints/create/')
 
         response = moderation_request.json()
+        print(response)
         level = response.get('level')
-
+        print(level)
         is_spam = False
         needs_review = False
 

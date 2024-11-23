@@ -8,7 +8,7 @@ from complaints.models import Complaint, ComplaintLike
 from .models import Students
 from .redis import r
 from .task import send_email
-
+from django.conf import settings
 
 
 def student_required(redirect_url):
@@ -51,7 +51,7 @@ def index(request):
     ).annotate(
         like_count=Count('complaintlike'),
         liked=Exists(likes_subquery)
-    ).order_by(sort_query)[:100]
+    ).order_by(sort_query)[:settings.MAX_COMPLAINTS_IN_MAIN_PAGE]
 
     context = {
         'complaints': complaints,

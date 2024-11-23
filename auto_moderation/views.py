@@ -16,12 +16,13 @@ def auto_check(request):
 
     with open(path, 'r', encoding='utf-8') as f:
         banned_words = f.read().splitlines()
+        strings = list(map(str.lower, banned_words))
 
     text = str(data['text']).split(' ')
     bad_words_count = 0
 
     for word in text:
-        if word in banned_words:
+        if word.lower() in banned_words:
             bad_words_count += 1
 
     words = len(text)
