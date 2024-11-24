@@ -38,13 +38,15 @@ def create(request):
 
         category = data.get("category")
 
-        anonymous = False if data.get('anonymous') else True
+        anonymous = True if data.get('anonymous') else False
+        print(anonymous)
         if anonymous:
-            name = data.get("name")
-            group = data.get("group")
-        else:
             name = None
             group = None
+        else:
+            name = data.get("name")
+            group = data.get("group")
+
 
         content = data['text']
 
@@ -126,7 +128,6 @@ def delete(request, id):
         try:
             complain = Complaint.objects.filter(id=id).first()
             complain.delete()
-            complain.save()
             return JsonResponse({'success': True})
         except:
             messages.error(request, 'Ошибка при удалении записи.')

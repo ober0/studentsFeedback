@@ -1,28 +1,76 @@
-<!DOCTYPE html>
-<html lang="en">
+{% load static %}
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{% static 'core/css/index.css'%}">
+    <link rel="stylesheet" href="{% static 'core/css/base.css'%}">
+    <title>Document</title>
 </head>
 <body>
+    {% include 'core/header.html' %}
+    {% block header %} {% endblock %}
 
-    {% for complaint in complaints %}
-        {{ complaint.category }}
-        {{ complaint.content }}
-        {% if complaint.is_anonymous %}
-            Анонимное обращение
-        {% else %}
-            {{ complaint.user_name }}
-            {{ complaint.user_group }}
+<main>
+    {% csrf_token %}
+    <div class="container">
+      <h1 class="mb-4 text-center" id="text-28">Мои обращения</h1>
+
+      <!-- Поле поиска и фильтры -->
+      <div class="row mb-4">
+        <div class="col-md-12">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Поиск по словам и категории" name="search" id="search" value="{{ search }}">
+            <div class="input-group-append">
+              <button class="btn btn-primary" id="search-go" type="button">Искать</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+        {% if complaints|length == 0 %}
+            Обращений нет
         {% endif %}
-        Опубликовано - {{ complaint.is_published }}
-        {{ complaint.status }}
-        {% if complaint.response_text %}
-            {{ complaint.response_text }}
-        {% else %}
-            Нет ответа
-        {% endif %}
-        <br>
-    {% endfor %}
+        {% for complaint in complaints %}
+            <div class="complaint" cid="{{ complaint.id }}">
+              <div class="card mb-4">
+                <div class="card-body">
+                  <h5 class="card-title"> {% if complaint.is_anonymous %}
+                    Анонимное обращение
+                {% else %}
+                    {{ complaint.user_name }}
+                {% endif %}</h5>
+                  <h6 class="card-subtitle mb-2 text-muted"><strong>Категория:</strong> {{ complaint.category }}</h6>
+                  <p class="card-text"><strong>Текст обращения:</strong> {{ complaint.content }}</p>
+
+                    {% if complaint.is_public %}
+                        {% if complaint.is_published %}
+                            <p style="color: lawngreen">✔ Опубликовано</p>
+                        {% else %}
+                            <p style="color: red">❌ Не опубликовано</p>
+                        {% endif %}
+                    {% endif %}
+                  <hr>
+                    {% if complaint.response_text %}
+                  <p><strong>Ответ администратора: </strong>{{ complaint.response_text }}</p>
+                    {% else %}
+                        <p><strong>Не просмотрено администрацией</strong></p>
+                    {% endif %}
+                  <p class="text-muted">Дата создания: {{ complaint.created_at}}</p>
+                </div>
+              </div>
+            </div>
+        {% endfor %}
+    </div>
+  </main>
+
+{% include 'core/footer.html' %}
+    {% block footer %} {% endblock %}
 </body>
+  <!-- Подключение Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'core/js/self-search-logic.js' %}"></script>
 </html>

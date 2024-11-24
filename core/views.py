@@ -1,8 +1,9 @@
 import random
 import secrets
-
+import re
 from django.db.models import Q
 from django.db.models import Count, Subquery, OuterRef, Exists
+from django.db.models.functions import Lower
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -39,6 +40,7 @@ def index(request):
         sort_query = '-created_at'
 
     search_query = request.GET.get('search', '')
+    escaped_search_query = re.escape(search_query)
 
     student_id = request.session.get('student_id')
     email = request.session.get('email')
@@ -48,8 +50,12 @@ def index(request):
         user=student_id
     )
 
-    complaints = Complaint.objects.filter(is_published=True, is_spam=False, needs_review=False).filter(
-        Q(content__icontains=search_query) | Q(category__icontains=search_query)
+    complaints = Complaint.objects.filter(
+        is_published=True,
+        is_spam=False,
+        needs_review=False
+    ).filter(
+        Q(content__iregex=escaped_search_query) | Q(category__iregex=escaped_search_query)
     ).annotate(
         like_count=Count('complaintlike'),
         liked=Exists(likes_subquery)
@@ -145,17 +151,20 @@ def my_complaints(request):
     student_id = request.session.get('student_id')
     student = Students.objects.filter(id=int(student_id)).first()
 
+
     search_query = request.GET.get('search', '')
-
-
+    escaped_search_query = re.escape(search_query)
 
     complaints1 = Complaint.objects.filter(user=student, is_spam=False).filter(
-        Q(content__icontains=search_query) | Q(category__icontains=search_query)
+        Q(content__iregex=escaped_search_query) | Q(category__iregex=escaped_search_query)
     )
+
     complaints2 = Complaint.objects.filter(email_for_reply=student.email, is_spam=False).filter(
-        Q(content__icontains=search_query) | Q(category__icontains=search_query)
+        Q(content__iregex=escaped_search_query) | Q(category__iregex=escaped_search_query)
     )
+
     complaints = complaints1.union(complaints2).order_by('-created_at')[:100]
+
 
 
     context = {

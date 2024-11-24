@@ -78,3 +78,12 @@ main {
   padding: 1rem 0;
 }
 
+
+@media (max-width: 561px) {
+  #footer{
+    display: block !important;
+  }
+  .footer-el{
+    margin-bottom: 35px;
+  }
+}
