@@ -53,6 +53,9 @@
 
                 <div class="form-group">
                     <label for="text">Текст:<span style="color: red;">*</span></label>
+                    <p>
+                        <small><strong>Внимание!</strong> За использование ненормативной лексики и/или спама вам может быть заблокирована возможность отправлять обращения</small>
+                    </p>
                     <textarea id="text" name="text" class="form-control" rows="4"  placeholder="Опишите вашу проблему или предложение..."></textarea>
 
                 </div>
@@ -64,6 +67,9 @@
 
                 <div class="form-group email-field" id="email-field">
                     <label for="email">Email:<span style="color: red;">*</span></label>
+                    <p>
+                        <small><strong>Email не будет виден администрации,</strong> он используется только для авто-отправки ответов</small>
+                    </p>
                     <input type="email" id="email" name="email" class="form-control" placeholder="Ваш email">
                 </div>
 
@@ -75,6 +81,9 @@
 
                 <div class="form-group link hidden">
                     <input type="hidden" name="link" id="link-display" value="{{ link }}">
+                    <p>
+                        <small><strong>Внимание!</strong> Обязательно сохраните ссылку</small>
+                    </p>
                     <button type="button" class="btn btn-secondary" id="copy-link-btn">Скопировать ссылку</button>
                 </div>
 
