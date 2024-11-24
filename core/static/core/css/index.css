@@ -41,11 +41,7 @@ svg{
   cursor: pointer;
 }
 
-@media (max-width: 992px) {
-  .user-logo{
-    display: none;
-  }
-}
+
 
 .like-btn{
   display: flex;
@@ -56,4 +52,9 @@ svg{
   width: fit-content;
   align-items: center;
   cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.like-btn:hover{
+  background-color: lightgrey;
 }

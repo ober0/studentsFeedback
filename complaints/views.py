@@ -13,7 +13,6 @@ from core.task import send_email
 
 # Create your views here.
 def create(request):
-    print(1)
     if request.method == 'POST':
         data = request.POST
 
@@ -22,7 +21,6 @@ def create(request):
             ip = x_forwarded_for.split(',')[0]
         else:
             ip = request.META.get('REMOTE_ADDR')
-        print(ip)
         pskey = data.get('pskey')
 
         if not pskey:
@@ -40,7 +38,7 @@ def create(request):
 
         category = data.get("category")
 
-        anonymous = True if data.get('anonymous') else False
+        anonymous = False if data.get('anonymous') else True
         if anonymous:
             name = data.get("name")
             group = data.get("group")
@@ -68,9 +66,7 @@ def create(request):
             return redirect(f'/complaints/create/')
 
         response = moderation_request.json()
-        print(response)
         level = response.get('level')
-        print(level)
         is_spam = False
         needs_review = False
 
