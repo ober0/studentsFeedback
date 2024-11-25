@@ -85,15 +85,10 @@
                         <small><strong>Внимание!</strong> Обязательно сохраните ссылку</small>
                     </p>
                     <button type="button" class="btn btn-secondary" id="copy-link-btn">Скопировать ссылку</button>
+                    <p class="hidden" style="color: red">Ссылка не скопирована, попробуйте вручную</p>
+                    <p class="hidden">{{ link }}</p>
                 </div>
-
-
-                <script>
-                    document.getElementById('copy-link-btn').addEventListener('click', function() {
-                        const linkText = document.getElementById('link-display').value;
-                        navigator.clipboard.writeText(linkText)
-                    });
-                </script>
+                
 
                 <div class="form-group flag">
                     <label for="publish">Разрешить публикацию на доске:</label>
@@ -113,6 +108,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
     <script src="{% static 'core/js/check_fingerprint.js' %}"></script>
     <script src="{% static 'core/js/create_complaints_form.js' %}"></script>
+    <script src="{% static 'core/js/copyLink.js' %}"></script>
 
 </body>
 </html>

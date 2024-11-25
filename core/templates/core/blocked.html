@@ -3,27 +3,34 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Вы заблокированы</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'core/css/base.css' %}">
+    <title>Блокировка</title>
 </head>
 <body>
+    {% include 'core/header.html' %}
+    <main style="max-width: 960px !important;" class="container">
+        <h1 class="text-center mb-4" style="font-size: 28px !important">К сожалению, доступ к системе для вас ограничен.</h1>
 
-    <p>Вы заблокированы!</p>
-    <div id="blocked-complaint">
+        <div id="blocked-complaint"></div>
 
-    </div>
-    <hr>
-    <div>
-        <form action="/manage/unban/request/" method="post">
-            {% csrf_token %}
-            <input type="hidden" name="complaint_id" id="complaint_id">
-            <p>Если вы хотите подать запрос на разблокировку заполнить форму ниже:</p>
-            <div id="form-block">
-            
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title text-left">Запрос на разблокировку</h5>
+                <p style="text-align: left" class="card-text">
+                    Если вы считаете, что блокировка была ошибочной, пожалуйста, заполните форму ниже:
+                </p>
+                <form action="/manage/unban/request/" method="post">
+                    {% csrf_token %}
+                    <placeholder type="hidden" name="complaint_id" id="complaint_id">
+                    <div id="form-block" style="text-align: left !important" class="mb-3"></div>
+                </form>
             </div>
-        </form>
-    </div>
-
+        </div>
+    </main>
+    {% include 'core/footer.html' %}
     <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
-    <script src="{% static '/core/js/getBlockComplaint.js' %}" ></script>
+    <script src="{% static '/core/js/getBlockComplaint.js' %}"></script>
 </body>
 </html>

@@ -78,7 +78,7 @@ def load_banned_complaint(request):
         'id': complaint.id,
         'category': complaint.category,
         'content': complaint.content,
-        'reason': blockedUser.block_reason
+        'reason': blockedUser.block_reason,
     })
 
 

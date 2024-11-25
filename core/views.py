@@ -26,8 +26,6 @@ def student_required(redirect_url):
 
 # messages.success(request, 'Вы успешно вошли!')
 
-
-
 def index(request):
     # likes or time
     sort = request.GET.get('filter')
@@ -105,12 +103,11 @@ def send_code(request):
 def check_code(request):
     if request.method == 'POST':
         next = request.POST.get('next')
-        print(next)
+
         code_input = request.POST.get('code')
         email = request.POST.get('email')
         code = r.get(email).decode('utf-8')
-        print(code)
-        print(code_input)
+
         if code == code_input:
             try:
                 student = Students.objects.filter(email=email).first()
@@ -130,7 +127,7 @@ def check_code(request):
             return render(request, 'core/enter_code.html', {'email': email})
 
 
-def   create_complaint(request):
+def create_complaint(request):
     user_id = request.session.get('student_id')
     user = Students.objects.filter(id=user_id).first()
     link = secrets.token_hex(32)
@@ -141,7 +138,7 @@ def   create_complaint(request):
     except:
         email = None
     return render(request, 'core/create_complaint.html', {'email': email, 'student_id': user_id,
-        'auth': True if user_id else False, 'link': link, 'link_url': link_url})
+        'auth': True if user_id else False, 'link': link_url})
 
 
 def blocked(request):
