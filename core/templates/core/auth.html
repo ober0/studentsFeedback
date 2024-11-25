@@ -1,15 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+{% load static %}
+<html lang="en"><head>
+	<title>Login V6</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="{% static 'core/css/auth.css' %}">
+
 </head>
 <body>
-<form method="POST" action="/auth/code/send/">
-    {% csrf_token %}
-    <input type="hidden" name="next" value="{{ next }}">
-    <input type="text" name="email" id="" placeholder="email">
-    <input type="submit" value="go">
-</form>
+	<div class="limiter">
+		<div class="container-login100">
+			<div class="wrap-login100 p-t-85 p-b-20">
+				<form class="login100-form validate-form" method="POST" action="/auth/code/send/">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ next }}">
+
+					<span class="login100-form-title mb-50" >
+						Добро пожаловать
+					</span>
+
+					<div class="wrap-input100 validate-input mb-30" data-validate="Email">
+						<input class="input100" type="email" name="email" required>
+						<span class="focus-input100" data-placeholder="Email"></span>
+					</div>
+
+
+					<div class="container-login100-form-btn">
+						<button class="login100-form-btn">
+							Получить код
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+    <script src="{% static 'core/js/has-val.js' %}"></script>
 </body>
 </html>

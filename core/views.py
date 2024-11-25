@@ -109,7 +109,8 @@ def check_code(request):
         code_input = request.POST.get('code')
         email = request.POST.get('email')
         code = r.get(email).decode('utf-8')
-
+        print(code)
+        print(code_input)
         if code == code_input:
             try:
                 student = Students.objects.filter(email=email).first()
@@ -129,7 +130,7 @@ def check_code(request):
             return render(request, 'core/enter_code.html', {'email': email})
 
 
-def create_complaint(request):
+def   create_complaint(request):
     user_id = request.session.get('student_id')
     user = Students.objects.filter(id=user_id).first()
     link = secrets.token_hex(32)
@@ -139,11 +140,19 @@ def create_complaint(request):
         email = user.email
     except:
         email = None
-    return render(request, 'core/create_complaint.html', {'email': email, 'user_id': user_id, 'link': link, 'link_url': link_url})
+    return render(request, 'core/create_complaint.html', {'email': email, 'student_id': user_id,
+        'auth': True if user_id else False, 'link': link, 'link_url': link_url})
 
 
 def blocked(request):
-    return render(request, 'core/blocked.html')
+    student_id = request.session.get('student_id')
+    email = request.session.get('email')
+    context = {
+        'student_id': student_id,
+        'auth': True if student_id else False,
+        'email': email
+    }
+    return render(request, 'core/blocked.html', context)
 
     
 @student_required('/complaints/my/')
