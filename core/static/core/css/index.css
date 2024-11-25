@@ -12,6 +12,8 @@ main {
 
 }
 
+
+
 #text-28{
   font-size: 28px !important;
 }
@@ -57,4 +59,10 @@ svg{
 
 .like-btn:hover{
   background-color: lightgrey;
+}
+
+@media (hover: none) {
+  .like-btn:hover {
+      background-color: white;
+  }
 }

@@ -12,6 +12,8 @@ from .models import Students
 from .redis import r
 from .task import send_email
 from django.conf import settings
+from babel.dates import format_datetime
+
 
 
 def student_required(redirect_url):
@@ -38,29 +40,12 @@ def index(request):
         sort_query = '-created_at'
 
     search_query = request.GET.get('search', '')
-    escaped_search_query = re.escape(search_query)
 
     student_id = request.session.get('student_id')
     email = request.session.get('email')
 
-    likes_subquery = ComplaintLike.objects.filter(
-        complaint=OuterRef('pk'),
-        user=student_id
-    )
-
-    complaints = Complaint.objects.filter(
-        is_published=True,
-        is_spam=False,
-        needs_review=False
-    ).filter(
-        Q(content__iregex=escaped_search_query) | Q(category__iregex=escaped_search_query)
-    ).annotate(
-        like_count=Count('complaintlike'),
-        liked=Exists(likes_subquery)
-    ).order_by(sort_query)[:settings.MAX_COMPLAINTS_IN_MAIN_PAGE]
 
     context = {
-        'complaints': complaints,
         'email': email,
         'search': search_query,
         'filter': sort,
@@ -69,6 +54,7 @@ def index(request):
     }
 
     return render(request, 'core/index.html', context)
+
 
 
 
@@ -180,3 +166,69 @@ def my_complaints(request):
     }
 
     return render(request, 'core/my_complaints.html', context)
+
+def loadmore(request):
+    if request.method == 'POST':
+        complaints_count = 3
+
+        start = int(request.POST.get('start', 0))
+        student_id = request.session.get('student_id', None)
+        email = request.session.get('email', None)
+
+
+        sort = request.GET.get('filter', 'time')
+        if sort == 'time':
+            sort_query = '-created_at'
+        elif sort == 'likes':
+            sort_query = '-like_count'
+        else:
+            sort_query = '-created_at'
+
+
+        search_query = request.GET.get('search', '')
+        escaped_search_query = re.escape(search_query)
+
+        try:
+            # Подзапрос для проверки лайков текущего пользователя
+            likes_subquery = ComplaintLike.objects.filter(
+                complaint=OuterRef('pk'),
+                user=student_id
+            )
+
+            # Запрос на получение жалоб
+            complaints = Complaint.objects.filter(
+                is_published=True,
+                is_spam=False,
+                needs_review=False
+            ).filter(
+                Q(content__iregex=escaped_search_query) | Q(category__iregex=escaped_search_query)
+            ).annotate(
+                like_count=Count('complaintlike'),
+                liked=Exists(likes_subquery)
+            ).order_by(sort_query)[start : start + complaints_count ]
+            print(start, start + complaints_count)
+            # Формирование данных для ответа
+            complaints_data = []
+            for complaint in complaints:
+                complaints_data.append({
+                    'id': complaint.id,
+                    'is_anonymous': complaint.is_anonymous,
+                    'user_name': complaint.user_name if not complaint.is_anonymous else None,
+                    'category': complaint.category,
+                    'content': complaint.content,
+                    'response_text': complaint.response_text or None,
+                    'created_at': format_datetime(complaint.created_at, "d MMMM yyyy, HH:mm", locale="ru") if complaint.created_at else None,
+                    'liked': complaint.liked,
+                    'like_count': complaint.like_count
+                })
+
+            context = {
+                'success': True,
+                'complaints_count': len(complaints_data),
+                'complaints': complaints_data
+            }
+
+        except Exception as e:
+            context = {'success': False, 'error': str(e)}
+
+        return JsonResponse(context)

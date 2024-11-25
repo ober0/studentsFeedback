@@ -11,4 +11,5 @@ urlpatterns = [
     path('blocked/', views.blocked, name='blocked'),
     path('complaints/my/', views.my_complaints, name='my_complaints'),
     path('exit/', views.exit, name='exit'),
+    path('loadmore/', views.loadmore, name='loadmore'),
 ]

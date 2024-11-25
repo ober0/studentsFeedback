@@ -1,8 +1,12 @@
+import re
 import secrets
 
 from django.contrib.auth.decorators import login_required
+from django.db.models import OuterRef, Count, Exists, Q
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
+from django.views.decorators.csrf import csrf_exempt
+
 from core.models import Students
 from complaints.models import Complaint, ComplaintLike
 from manage.models import BlockedUser
@@ -199,8 +203,10 @@ def unlike(request):
 
 def complaint(request, key):
     complaint = Complaint.objects.filter(reply_code=key).first()
-    print(complaint.category)
     if complaint:
         context = {'complaint': complaint}
         return render(request, 'core/complaint_view.html', context)
     return redirect('index')
+
+
+
