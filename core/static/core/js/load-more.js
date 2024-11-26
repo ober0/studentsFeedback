@@ -29,6 +29,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     result.complaints.forEach((complaint) => {
                         const complaintHTML = createComplaint(complaint);
                         document.querySelector('.complaints').insertAdjacentHTML('beforeend', complaintHTML);
+                        if (Number(result.complaints_count) <= document.querySelectorAll('.complaint').length){
+                            window.removeEventListener('scroll', loadMore);
+                        }
                     });
                 } else {
                     console.error('Ошибка при загрузке жалоб:', result.error);
@@ -87,11 +90,15 @@ document.addEventListener('DOMContentLoaded', function () {
     // Загружаем контент при загрузке страницы
     loadMoreContent();
 
-    // Добавляем обработчик для бесконечной прокрутки
-    window.addEventListener('scroll', () => {
+
+    function loadMore() {
         let footerHeight = document.getElementById('footer').offsetHeight + 50
         if (window.innerHeight + window.scrollY + footerHeight >= document.body.offsetHeight) {
             loadMoreContent();
         }
-    });
+    }
+    // Добавляем обработчик для бесконечной прокрутки
+    window.addEventListener('scroll', loadMore);
+
+
 });

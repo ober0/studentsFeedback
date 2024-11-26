@@ -153,7 +153,6 @@ def my_complaints(request):
 
 def loadmore(request):
     if request.method == 'POST':
-        complaints_count = 3
 
         start = int(request.POST.get('start', 0))
         student_id = request.session.get('student_id', None)
@@ -189,8 +188,9 @@ def loadmore(request):
             ).annotate(
                 like_count=Count('complaintlike'),
                 liked=Exists(likes_subquery)
-            ).order_by(sort_query)[start : start + complaints_count ]
-            print(start, start + complaints_count)
+                ).order_by(sort_query)
+            complaints_count_all = len(complaints)
+            complaints = complaints[start : start + settings.COMPLAINTS_LIST_SIZE]
             # Формирование данных для ответа
             complaints_data = []
             for complaint in complaints:
@@ -208,7 +208,7 @@ def loadmore(request):
 
             context = {
                 'success': True,
-                'complaints_count': len(complaints_data),
+                'complaints_count': complaints_count_all,
                 'complaints': complaints_data
             }
 
@@ -243,7 +243,9 @@ def loadmore_my(request):
             ).distinct()
 
             # Объединяем запросы без вызова distinct()
-            complaints = list(complaints1.union(complaints2).order_by('-created_at'))[start:start+3]
+            complaints = list(complaints1.union(complaints2).order_by('-created_at'))
+            complaints_count_all = len(complaints)
+            complaints = complaints[start: start + settings.COMPLAINTS_LIST_SIZE]
 
             # Убираем дубликаты вручную
             unique_complaints = {complaint.id: complaint for complaint in complaints}.values()
@@ -265,7 +267,7 @@ def loadmore_my(request):
                     'is_public': complaint.is_public,
                 })
 
-            return JsonResponse({'success': True, 'complaints': complaints_data})
+            return JsonResponse({'success': True, 'complaints_count': complaints_count_all, 'complaints': complaints_data})
 
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)}, status=500)
