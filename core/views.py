@@ -144,23 +144,7 @@ def my_complaints(request):
     student = Students.objects.filter(id=int(student_id)).first()
 
 
-    search_query = request.GET.get('search', '')
-    escaped_search_query = re.escape(search_query)
-
-    complaints1 = Complaint.objects.filter(user=student, is_spam=False).filter(
-        Q(content__iregex=escaped_search_query) | Q(category__iregex=escaped_search_query)
-    )
-
-    complaints2 = Complaint.objects.filter(email_for_reply=student.email, is_spam=False).filter(
-        Q(content__iregex=escaped_search_query) | Q(category__iregex=escaped_search_query)
-    )
-
-    complaints = complaints1.union(complaints2).order_by('-created_at')[:100]
-
-
-
     context = {
-        'complaints': complaints,
         'user_id': student_id,
         'email': student.email
     }
@@ -232,3 +216,58 @@ def loadmore(request):
             context = {'success': False, 'error': str(e)}
 
         return JsonResponse(context)
+
+
+def loadmore_my(request):
+    if request.method == 'POST':
+        try:
+            start = int(request.POST.get('start', 0))
+            # Получаем данные пользователя
+            student_id = request.session.get('student_id')
+            student = Students.objects.filter(id=int(student_id)).first()
+
+            if not student:
+                return JsonResponse({'success': False, 'error': 'Пользователь не найден'})
+
+            # Обрабатываем параметры поиска
+            search_query = request.GET.get('search', '')
+            escaped_search_query = re.escape(search_query)
+
+            # Получаем жалобы
+            complaints1 = Complaint.objects.filter(user=student, is_spam=False).filter(
+                Q(content__iregex=escaped_search_query) | Q(category__iregex=escaped_search_query)
+            ).distinct()
+
+            complaints2 = Complaint.objects.filter(email_for_reply=student.email, is_spam=False).filter(
+                Q(content__iregex=escaped_search_query) | Q(category__iregex=escaped_search_query)
+            ).distinct()
+
+            # Объединяем запросы без вызова distinct()
+            complaints = list(complaints1.union(complaints2).order_by('-created_at'))[start:start+3]
+
+            # Убираем дубликаты вручную
+            unique_complaints = {complaint.id: complaint for complaint in complaints}.values()
+
+            # Преобразуем жалобы в JSON-формат
+            complaints_data = []
+            for complaint in unique_complaints:
+                complaints_data.append({
+                    'id': complaint.id,
+                    'is_anonymous': complaint.is_anonymous,
+                    'user_name': complaint.user_name if not complaint.is_anonymous else None,
+                    'category': complaint.category,
+                    'content': complaint.content,
+                    'response_text': complaint.response_text or None,
+                    'created_at': format_datetime(
+                        complaint.created_at, "d MMMM yyyy, HH:mm", locale="ru"
+                    ) if complaint.created_at else None,
+                    'is_published': complaint.is_published,
+                    'is_public': complaint.is_public,
+                })
+
+            return JsonResponse({'success': True, 'complaints': complaints_data})
+
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
+    else:
+        return JsonResponse({'success': False, 'error': 'Метод не поддерживается'}, status=405)

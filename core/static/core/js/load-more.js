@@ -1,13 +1,11 @@
 document.addEventListener('DOMContentLoaded', function () {
-    let isLoading = false; // Флаг выполнения
+    let isLoading = false;
 
     function loadMoreContent() {
-        if (isLoading) return; // Если загрузка уже идёт, выходим из функции
+        if (isLoading) return;
 
-        isLoading = true; // Устанавливаем флаг в true
-        console.log('Загрузка контента...');
+        isLoading = true;
 
-        // Получаем текущее количество жалоб
         let complaintCount = document.querySelectorAll('.complaint').length;
 
         // Формируем данные для отправки

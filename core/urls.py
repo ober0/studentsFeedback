@@ -12,4 +12,5 @@ urlpatterns = [
     path('complaints/my/', views.my_complaints, name='my_complaints'),
     path('exit/', views.exit, name='exit'),
     path('loadmore/', views.loadmore, name='loadmore'),
+    path('loadmore/my/', views.loadmore_my, name='loadmore'),
 ]
