@@ -131,9 +131,9 @@ def open_complaints(request):
         second_name = ''
 
     name = first_name + ' ' + second_name + '.'
-    
-    
-    
+
+
+
     category = request.GET.get('category')
     filters = {
         'status': 'open',
@@ -239,16 +239,6 @@ def complaint(request, id):
     }
 
     if complaint.status == 'open':
-
-        user_first_name = request.user.first_name
-    try:
-        second_name = request.user.last_name[0]
-    except IndexError:
-        second_name = ''
-
-    name = first_name + ' ' + second_name + '.'
-        if not user_name:
-            user_name = 'admin'
         return render(request, 'manage/complaint_open.html', context)
     else:
         return render(request, 'manage/complaint_close.html', context)
