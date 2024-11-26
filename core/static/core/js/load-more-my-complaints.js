@@ -81,7 +81,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Добавляем обработчик для бесконечной прокрутки
     window.addEventListener('scroll', () => {
-        if (window.innerHeight + window.scrollY + 350 >= document.body.offsetHeight) {
+        let footerHeight = document.getElementById('footer').offsetHeight + 50
+        if (window.innerHeight + window.scrollY + footerHeight >= document.body.offsetHeight) {
             loadMoreContent();
         }
     });
