@@ -122,9 +122,18 @@ def unban_request_create(request):
 def open_complaints(request):
     page = 'Открытые обращения'
     category = request.GET.get('category')
+    
+    
+    first_name = request.user.first_name
+    try:
+        second_name = request.user.last_name[0]
+    except IndexError:
+        second_name = ''
 
-    name = request.user.first_name + ' ' + request.user.last_name[0] + '.'
-
+    name = first_name + ' ' + second_name + '.'
+    
+    
+    
     category = request.GET.get('category')
     filters = {
         'status': 'open',
@@ -151,7 +160,13 @@ def open_need_review_complaints(request):
     page = 'Спам'
     category = request.GET.get('category')
 
-    name = request.user.first_name + ' ' + request.user.last_name[0] + '.'
+    first_name = request.user.first_name
+    try:
+        second_name = request.user.last_name[0]
+    except IndexError:
+        second_name = ''
+
+    name = first_name + ' ' + second_name + '.'
 
     category = request.GET.get('category')
     filters = {
@@ -179,7 +194,13 @@ def close_complaints(request):
     page = 'Закрытые'
     category = request.GET.get('category')
 
-    name = request.user.first_name + ' ' + request.user.last_name[0] + '.'
+    first_name = request.user.first_name
+    try:
+        second_name = request.user.last_name[0]
+    except IndexError:
+        second_name = ''
+
+    name = first_name + ' ' + second_name + '.'
 
 
     category = request.GET.get('category')
@@ -205,7 +226,13 @@ def close_complaints(request):
 @login_required(login_url=settings.LOGIN_URL)
 def complaint(request, id):
     complaint = Complaint.objects.get(id=id)
-    name = request.user.first_name + ' ' + request.user.last_name[0] + '.'
+    first_name = request.user.first_name
+    try:
+        second_name = request.user.last_name[0]
+    except IndexError:
+        second_name = ''
+
+    name = first_name + ' ' + second_name + '.'
     context = {
         'complaint': complaint,
         'name': name
@@ -213,7 +240,13 @@ def complaint(request, id):
 
     if complaint.status == 'open':
 
-        user_name = request.user.first_name + ' ' + request.user.last_name[0] + '.'
+        user_first_name = request.user.first_name
+    try:
+        second_name = request.user.last_name[0]
+    except IndexError:
+        second_name = ''
+
+    name = first_name + ' ' + second_name + '.'
         if not user_name:
             user_name = 'admin'
         return render(request, 'manage/complaint_open.html', context)
@@ -252,7 +285,13 @@ def index(request):
 def unban_requests_check(request):
     unban_requests = UserUnbanRequest.objects.all()
 
-    name = request.user.first_name + ' ' + request.user.last_name[0] + '.'
+    first_name = request.user.first_name
+    try:
+        second_name = request.user.last_name[0]
+    except IndexError:
+        second_name = ''
+
+    name = first_name + ' ' + second_name + '.'
 
     context = {
         'requests': unban_requests,
