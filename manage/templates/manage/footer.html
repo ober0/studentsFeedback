@@ -13,8 +13,10 @@
     </div>
     <div class="footer-links footer-el">
       <p><a href="{% url 'index' %}" class="text-decoration-none">Главная</a></p>
-      <p><a href="{% url 'my_complaints' %}" class="text-decoration-none">Обращения</a></p>
-      <p><a href="{% url 'create_complaint' %}" class="text-decoration-none">Запросы на разбан</a></p>
+      <p><a class=text-decoration-none" href="{% url 'open_complaints' %}">Открытые обращения</a></p>
+      <p><a class="text-decoration-none " href="{% url 'open_need_review_complaints' %}">Спам</a></p>
+      <p><a class="text-decoration-none" href="{% url 'close_complaints' %}">Закрытые обращения</a></p>
+      <p><a class="text-decoration-none" href="{% url 'unban_requests' %}">Запросы на разбан</a></p>
     </div>
     <div class="footer-links footer-el">
       <a href="https://vk.com/ks54ru" style="margin-right: 5px !important;" class="text-decoration-none"><img width="38px" src="{% static 'core/img/vk.png' %}" alt=""></a>
