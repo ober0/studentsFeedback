@@ -84,7 +84,7 @@ def load_banned_complaint(request):
     request = UserUnbanRequest.objects.filter(complaint=complaint).filter(Q(review_result='rejected') | Q(review_result='in_work')).first()
     if request:
         context['isRequestSend'] = True
-        context['status'] = request.review_result
+        context['status'] = 'В работе' if request.review_result == 'in_work' else 'Закрыто'
         return JsonResponse(context)
 
     context['isRequestSend'] = False
@@ -253,7 +253,6 @@ def unban_requests_check(request):
     unban_requests = UserUnbanRequest.objects.all()
 
     name = request.user.first_name + ' ' + request.user.last_name[0] + '.'
-    
 
     context = {
         'requests': unban_requests,

@@ -15,30 +15,38 @@
         <thead>
             <tr>
                 <th>№</th>
-                <th>Причина блокировки</th>
                 <th>Имя</th>
                 <th>Создана</th>
             </tr>
         </thead>
         <tbody>
         {% for request in requests %}
-            <tr class="tr-comp" id="{{ requests.id }}">
-                <td>{{ requests.id }}</td>
-                <td>{{ complaint.category }}</td>
+            <tr class="unban-request" id="{{ request.id }}">
+                <td>{{ request.id }}</td>
                 <td>
-                    {% if requests.complaint.is_anonymous == False %}
+                    {% if request.complaint.is_anonymous == False %}
                         {{ requests.complaint.user_name }}
                     {% else %}
                         Анонимно
                     {% endif %}
                 </td>
 
-                <td>{{ requests.created_at }}</td>
+                <td>{{ request.created_at }}</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 </main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.unban-request').forEach(btn => {
+            btn.addEventListener('click', function () {
+                window.location.href = `/manage/unban/request/check/${this.id}/`
+            })
+        })
+    })
+</script>
 
 {% include 'manage/footer.html' %}
     {% block admin_footer %} {% endblock %}

@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,6 +16,7 @@
 <body>
     {% include 'manage/header.html' %}
     {% block admin_header %} {% endblock %}
+
     <main>
 
     <select id="category" name="category">
@@ -90,4 +92,5 @@
 
 });
 </script>
+
 </html>
