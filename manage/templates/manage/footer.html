@@ -1,0 +1,26 @@
+{% load static %}
+{% block admin_footer %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="{% static 'core/css/base.css'%}">
+<footer id="footer">
+  <div class="container footer-content d-flex justify-content-between align-items-center py-3" id="footer">
+    <div class="footer-el">
+      <p>© 2024 Колледж связи 54.</p>
+      <p>Все права защищены.</p>
+      <p>Разработчик: <a href="https://github.com/ober0"</a>@ober0</p>
+      <p>Почта для связи: <a href="mailto:contact@ks54.ru" class="text-decoration-none text-primary">contact@ks54.ru</a></p>
+       Телефон для связи: <a href="tel:+74951341234">8 (495) 134-12-34</a>
+    </div>
+    <div class="footer-links footer-el">
+      <p><a href="{% url 'index' %}" class="text-decoration-none">Главная</a></p>
+      <p><a href="{% url 'my_complaints' %}" class="text-decoration-none">Обращения</a></p>
+      <p><a href="{% url 'create_complaint' %}" class="text-decoration-none">Запросы на разбан</a></p>
+    </div>
+    <div class="footer-links footer-el">
+      <a href="https://vk.com/ks54ru" style="margin-right: 5px !important;" class="text-decoration-none"><img width="38px" src="{% static 'core/img/vk.png' %}" alt=""></a>
+      <a href="https://t.me/ks54ru" style="margin-right: 5px !important;" class="text-decoration-none"><img width="38px" src="{% static 'core/img/telegram.png' %}" alt=""></a>
+      <a href="https://ks54.ru" style="margin-right: 5px !important;" class="text-decoration-none"><img width="38px" src="{% static 'core/img/website.png' %}" alt=""></a>
+    </div>
+  </div>
+</footer>
+{% endblock %}

@@ -152,3 +152,5 @@ COMPLAINTS_VIEW_URL = f'{URL}/complaints/'
 VIEW_COMPLAINTS_URL = f'{URL}/complaints/my/'
 
 MAX_COMPLAINTS_IN_MAIN_PAGE = 30
+
+LOGIN_URL = '/admin/login/'

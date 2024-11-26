@@ -6,7 +6,11 @@
     <title>Обращение #{{ complaint.id }}</title>
 </head>
 <body>
-<input type="hidden" id="id" value="{{ complaint.id }}">
+{% include 'manage/header.html' %}
+    {% block admin_header %} {% endblock %}
+
+<main>
+    <input type="hidden" id="id" value="{{ complaint.id }}">
 {{ complaint.category }}
     {{ complaint.content }}
 
@@ -31,7 +35,10 @@
 <input type="text" name="reason" id="reason" placeholder="Причина блокирровки">
 <input id="block_user" type="button" value="Заблокировать пользователя">
 <input id="remove_complaint" type="button" value="Удалить обращение">
+</main>
 
+{% include 'manage/footer.html' %}
+    {% block admin_footer %} {% endblock %}
 <script src="{% static 'manage/js/ban_user.js' %}"></script>
 <script src="{% static 'manage/js/delete_complaint.js' %}"></script>
 

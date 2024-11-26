@@ -133,7 +133,7 @@ def blocked(request):
     context = {
         'student_id': student_id,
         'auth': True if student_id else False,
-        'email': email
+        'email': email,
     }
     return render(request, 'core/blocked.html', context)
 

@@ -13,11 +13,10 @@
     <title>Title</title>
 </head>
 <body>
-    <div class="btns">
-        <a href="{% url 'open_complaints' %}">Открытые</a>
-        <a href="{% url 'open_need_review_complaints' %}">Спам</a>
-        <a href="{% url 'close_complaints' %}">Закрытые</a>
-    </div>
+    {% include 'manage/header.html' %}
+    {% block admin_header %} {% endblock %}
+    <main>
+
     <select id="category" name="category">
         <option value="" {% if category == None or category == '' %}selected{% endif %}>Все</option>
         <option value="Жалоба" {% if category == 'Жалоба' %}selected{% endif %}>Жалоба</option>
@@ -66,6 +65,9 @@
         {% endfor %}
         </tbody>
     </table>
+    </main>
+    {% include 'manage/footer.html' %}
+    {% block admin_footer %} {% endblock %}
 </body>
 <script>
     document.querySelectorAll('.tr-comp').forEach(btn => {

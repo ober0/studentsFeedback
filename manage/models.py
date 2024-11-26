@@ -14,9 +14,10 @@ class UserUnbanRequest(models.Model):
     request_text = models.TextField(verbose_name='Текст запроса')
     review_result = models.CharField(
         max_length=50,
-        choices=[('unbanned', 'Разбанен'), ('rejected', 'Отклонен')],
+        choices=[('unbanned', 'Разбанен'), ('rejected', 'Отклонен'), ("in_work", 'Не рассмотрено')],
         blank=True,
         null=True,
+        default='in_work',
         verbose_name='Результат рассмотрения'
     )
     reviewed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Рассмотрено')

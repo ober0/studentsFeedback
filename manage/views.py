@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
@@ -73,16 +74,24 @@ def load_banned_complaint(request):
         print(1)
         return JsonResponse({'success': False, 'redirect': '/'})
 
-    return JsonResponse({
+    context = {
         'success': True,
         'id': complaint.id,
         'category': complaint.category,
         'content': complaint.content,
         'reason': blockedUser.block_reason,
-    })
+    }
+    request = UserUnbanRequest.objects.filter(complaint=complaint).filter(Q(review_result='rejected') | Q(review_result='in_work')).first()
+    if request:
+        context['isRequestSend'] = True
+        context['status'] = request.review_result
+        return JsonResponse(context)
+
+    context['isRequestSend'] = False
+    return JsonResponse(context)
 
 
-def unban_request(request):
+def unban_request_create(request):
     if request.method == 'POST':
         data = request.POST
 
@@ -104,18 +113,17 @@ def unban_request(request):
 
             messages.success(request, 'Успешно. В случае одобрения заявки вы будете разблокированы.')
             return redirect('/')
-        except:
+        except Exception as e:
+            print(str(e))
             messages.error(request, 'Создать заявку не удалось. Попробуйте снова')
             return redirect('/blocked/')
 
-@login_required(login_url='/admin/login/')
+@login_required(login_url=settings.LOGIN_URL)
 def open_complaints(request):
     page = 'Открытые обращения'
     category = request.GET.get('category')
 
-    user_name = request.user.first_name
-    if not user_name:
-        user_name = 'admin'
+    name = request.user.first_name + ' ' + request.user.last_name[0] + '.'
 
     category = request.GET.get('category')
     filters = {
@@ -131,21 +139,19 @@ def open_complaints(request):
 
     context = {
         'complaints': complaints,
-        'user_name': user_name,
+        'name': name,
         'page': page,
         'category': category
     }
     return render(request, 'manage/complaints_list.html', context)
 
 
-@login_required(login_url='/admin/login/')
+@login_required(login_url=settings.LOGIN_URL)
 def open_need_review_complaints(request):
     page = 'Спам'
     category = request.GET.get('category')
 
-    user_name = request.user.first_name
-    if not user_name:
-        user_name = 'admin'
+    name = request.user.first_name + ' ' + request.user.last_name[0] + '.'
 
     category = request.GET.get('category')
     filters = {
@@ -161,21 +167,20 @@ def open_need_review_complaints(request):
 
     context = {
         'complaints': complaints,
-        'user_name': user_name,
+        'name': name,
         'page': page,
         'category': category
     }
     return render(request, 'manage/complaints_list.html', context)
 
 
-@login_required(login_url='/admin/login/')
+@login_required(login_url=settings.LOGIN_URL)
 def close_complaints(request):
     page = 'Закрытые'
     category = request.GET.get('category')
 
-    user_name = request.user.first_name
-    if not user_name:
-        user_name = 'admin'
+    name = request.user.first_name + ' ' + request.user.last_name[0] + '.'
+
 
     category = request.GET.get('category')
     filters = {
@@ -190,29 +195,31 @@ def close_complaints(request):
 
     context = {
         'complaints': complaints,
-        'user_name': user_name,
+        'name': name,
         'page': page,
         'category': category
     }
     return render(request, 'manage/complaints_list.html', context)
 
 
-@login_required(login_url='/admin/login/')
+@login_required(login_url=settings.LOGIN_URL)
 def complaint(request, id):
     complaint = Complaint.objects.get(id=id)
+    name = request.user.first_name + ' ' + request.user.last_name[0] + '.'
     context = {
         'complaint': complaint,
+        'name': name
     }
 
     if complaint.status == 'open':
 
-        user_name = request.user.first_name
+        user_name = request.user.first_name + ' ' + request.user.last_name[0] + '.'
         if not user_name:
             user_name = 'admin'
         return render(request, 'manage/complaint_open.html', context)
     else:
         return render(request, 'manage/complaint_close.html', context)
-@login_required(login_url='/admin/login/')
+@login_required(login_url=settings.LOGIN_URL)
 def ban(request, id):
     if request.method == 'POST':
         reason = request.POST.get('reason')
@@ -237,6 +244,24 @@ def ban(request, id):
             messages.error(request, f'Ошибка! {str(e)}')
             return JsonResponse({'success': False})
 
-@login_required(login_url='/admin/login/')
+@login_required(login_url=settings.LOGIN_URL)
 def index(request):
     return redirect('open_complaints')
+
+@login_required(login_url=settings.LOGIN_URL)
+def unban_requests_check(request):
+    unban_requests = UserUnbanRequest.objects.all()
+
+    name = request.user.first_name + ' ' + request.user.last_name[0] + '.'
+    
+
+    context = {
+        'requests': unban_requests,
+        'name': name
+    }
+
+    return render(request, 'manage/unban_requests_list.html', context)
+
+
+def unban_request_check(request, id):
+    return JsonResponse({'id': id})

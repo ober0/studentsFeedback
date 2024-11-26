@@ -6,7 +6,11 @@
     <title>Обращение #{{ complaint.id }}</title>
 </head>
 <body>
-<input type="hidden" id="id" value="{{ complaint.id }}">
+{% include 'manage/header.html' %}
+    {% block admin_header %} {% endblock %}
+
+<main>
+    <input type="hidden" id="id" value="{{ complaint.id }}">
 {{ complaint.category }}
     {{ complaint.content }}
 
@@ -21,5 +25,9 @@
 
     {{ complaint.response_text }}
     {{ complaint.admin }}
+</main>
+
+{% include 'manage/footer.html' %}
+    {% block admin_footer %} {% endblock %}
 </body>
 </html>

@@ -126,7 +126,7 @@ def create(request):
         messages.success(request, 'Обращение создано')
         return redirect('/')
 
-@login_required(login_url='/admin/login/')
+@login_required(login_url=settings.LOGIN_URL)
 def delete(request, id):
     if request.method == 'POST':
         try:
@@ -137,7 +137,7 @@ def delete(request, id):
             messages.error(request, 'Ошибка при удалении записи.')
             return JsonResponse({'success': False})
 
-@login_required(login_url='/admin/login/')
+@login_required(login_url=settings.LOGIN_URL)
 def add_response(request, id):
     if request.method == 'POST':
         is_published = request.POST.get('is_published')

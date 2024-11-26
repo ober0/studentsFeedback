@@ -21,8 +21,9 @@
                 <p style="text-align: left" class="card-text">
                     Если вы считаете, что блокировка была ошибочной, пожалуйста, заполните форму ниже:
                 </p>
-                <form action="/manage/unban/request/" method="post">
+                <form action="{% url 'unban_request_create' %}" method="post">
                     {% csrf_token %}
+                    
                     <placeholder type="hidden" name="complaint_id" id="complaint_id">
                     <div id="form-block" style="text-align: left !important" class="mb-3"></div>
                 </form>

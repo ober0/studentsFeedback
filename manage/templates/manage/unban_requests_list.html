@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+{% include 'manage/header.html' %}
+    {% block admin_header %} {% endblock %}
+
+
+<main>
+    <table>
+        <thead>
+            <tr>
+                <th>№</th>
+                <th>Причина блокировки</th>
+                <th>Имя</th>
+                <th>Создана</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for request in requests %}
+            <tr class="tr-comp" id="{{ requests.id }}">
+                <td>{{ requests.id }}</td>
+                <td>{{ complaint.category }}</td>
+                <td>
+                    {% if requests.complaint.is_anonymous == False %}
+                        {{ requests.complaint.user_name }}
+                    {% else %}
+                        Анонимно
+                    {% endif %}
+                </td>
+
+                <td>{{ requests.created_at }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</main>
+
+{% include 'manage/footer.html' %}
+    {% block admin_footer %} {% endblock %}
+
+</body>
+</html>
