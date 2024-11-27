@@ -124,7 +124,7 @@ def create_complaint(request):
     except:
         email = None
     return render(request, 'core/create_complaint.html', {'email': email, 'student_id': user_id,
-        'auth': True if user_id else False, 'link': link_url})
+        'auth': True if user_id else False, 'link': link, 'link_url': link_url})
 
 
 def blocked(request):

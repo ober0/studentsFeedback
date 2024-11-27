@@ -230,6 +230,8 @@ def unlike(request):
 
 
 def complaint(request, key):
+    print(key)
+    complaint1 = Complaint.objects.get(id=56).reply_code
     complaint = Complaint.objects.filter(reply_code=key).first()
     if complaint:
         context = {'complaint': complaint}
