@@ -134,9 +134,14 @@ def create(request):
 
             if level == 2:
                 try:
+                    if settings.BAN_MATS_TIME != 'forever':
+                        block_end_time = timezone.now() + timedelta(hours=settings.BAN_MATS_TIME)
+                    else:
+                        block_end_time = None
                     block_user = BlockedUser.objects.create(ip_address=ip, device_identifier=pskey,
                                                             block_reason='Автоматическая блокировка',
-                                                            complaints_spam_id=complaint)
+                                                            complaints_spam_id=complaint,
+                                                            ended_at=block_end_time)
                     block_user.save()
                     return redirect('/blocked/')
                 except Exception as e:

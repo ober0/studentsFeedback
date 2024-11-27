@@ -87,10 +87,13 @@ def load_banned_complaint(request):
         blockedUser = BlockedUser.objects.filter(Q(ip_address=ip) | Q(device_identifier=fingerprint)).order_by('-blocked_at').first()
         complaint = blockedUser.complaints_spam_id
     except:
-        print(1)
         return JsonResponse({'success': False, 'redirect': '/'})
 
     end = blockedUser.ended_at
+    if end < timezone.now():
+        blockedUser.delete()
+        return JsonResponse({'success': False, 'redirect': '/complaints/create/'})
+
     if end:
         end = format_datetime(timezone.localtime(end), "d MMMM HH:mm:ss", locale="ru")
     else:
