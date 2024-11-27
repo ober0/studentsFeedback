@@ -16,6 +16,7 @@
             <tr>
                 <th>№</th>
                 <th>Имя</th>
+                <th>Причина</th>
                 <th>Создана</th>
             </tr>
         </thead>
@@ -24,13 +25,13 @@
             <tr class="unban-request" id="{{ request.id }}">
                 <td>{{ request.id }}</td>
                 <td>
-                    {% if request.complaint.is_anonymous == False %}
-                        {{ requests.complaint.user_name }}
-                    {% else %}
+                    {% if request.is_anonymous == True %}
                         Анонимно
+                    {% else %}
+                        {{ request.user_name }}
                     {% endif %}
                 </td>
-
+                <td>{{ request.block_reason }}</td>
                 <td>{{ request.created_at }}</td>
             </tr>
         {% endfor %}

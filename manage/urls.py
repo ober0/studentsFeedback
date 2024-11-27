@@ -14,5 +14,4 @@ urlpatterns = [
     path('complaint/close/', views.close_complaints, name='close_complaints'),
     path('complaint/<int:id>/', views.complaint),
     path('ban/<int:id>/', views.ban),
-    # path('')
 ]

@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from .models import BlockedUser, UserUnbanRequest
 from complaints.models import Complaint
-from django.db.models import Q
+from django.db.models import Q, F, OuterRef, Subquery
 from django.contrib import messages
 
 
@@ -117,6 +117,7 @@ def unban_request_create(request):
             print(str(e))
             messages.error(request, 'Создать заявку не удалось. Попробуйте снова')
             return redirect('/blocked/')
+
 
 @login_required(login_url=settings.LOGIN_URL)
 def open_complaints(request):
@@ -271,9 +272,20 @@ def ban(request, id):
 def index(request):
     return redirect('open_complaints')
 
+
 @login_required(login_url=settings.LOGIN_URL)
 def unban_requests_check(request):
-    unban_requests = UserUnbanRequest.objects.all()
+
+    blocked_reason_subquery = BlockedUser.objects.filter(
+        complaints_spam_id=OuterRef('complaint')
+    ).values('block_reason')[:1]
+
+    # Основной запрос с аннотациями
+    unban_requests = UserUnbanRequest.objects.annotate(
+        is_anonymous=F('complaint__is_anonymous'),
+        user_name=F('complaint__user_name'),
+        block_reason=Subquery(blocked_reason_subquery)
+    )
 
     first_name = request.user.first_name
     try:
