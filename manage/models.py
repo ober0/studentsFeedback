@@ -35,7 +35,7 @@ class BlockedUser(models.Model):
     block_reason = models.TextField(verbose_name='Причина блокировки')
     complaints_spam_id = models.ForeignKey('complaints.Complaint', on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Заблокированное обращение')
     blocked_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата блокировки')
-
+    ended_at = models.DateTimeField(verbose_name='Истекает', null=True, blank=True)
 
 
     class Meta:

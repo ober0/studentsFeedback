@@ -1,12 +1,10 @@
-import re
-import secrets
-
+from django.utils import timezone
+from datetime import timedelta
 from django.contrib.auth.decorators import login_required
-from django.db.models import OuterRef, Count, Exists, Q
+from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
-from django.views.decorators.csrf import csrf_exempt
-
+from .task import unbanUser
 from core.models import Students
 from complaints.models import Complaint, ComplaintLike
 from manage.models import BlockedUser
@@ -30,14 +28,38 @@ def create(request):
         if not pskey:
             return redirect('/')
 
-
-
         isBlocked_ip = BlockedUser.objects.filter(ip_address=ip).exists()
         isBlockedFingerprint = BlockedUser.objects.filter(device_identifier=pskey).exists()
 
         if isBlocked_ip or isBlockedFingerprint:
             return redirect('/blocked/')
 
+
+
+        time_interval_5 = timezone.now() - timezone.timedelta(minutes=5)
+
+        recent_complaints = Complaint.objects.filter(Q(ip_address=ip) | Q(device_identifier=pskey)).filter(created_at__gte=time_interval_5).order_by('-created_at')
+        if len(recent_complaints) >= settings.MAX_COMPLAINTS_COUNT:
+            messages.error(request, f'Ваши действия похожи на автоматические, вы заблокированы на {settings.BAN_FOR_SPAM_TIME} мин')
+
+            block_end_time = timezone.now() + timedelta(minutes=settings.BAN_FOR_SPAM_TIME)
+
+            block_user = BlockedUser.objects.create(ip_address=ip, device_identifier=pskey,
+                                                    block_reason='Подозрение на спам',
+                                                    ended_at=block_end_time,
+                                                    complaints_spam_id=recent_complaints[0])
+            block_user.save()
+
+            for complaint in recent_complaints:
+                complaint.is_spam = True
+                complaint.save()
+
+            unbanUser.apply_async(
+                kwargs={'id': block_user.id},
+                eta=block_end_time
+            )
+
+            return redirect('/blocked/')
 
 
         category = data.get("category")

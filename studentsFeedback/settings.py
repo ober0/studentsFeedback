@@ -109,7 +109,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'ru-ru'
+LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'Europe/Moscow'
 
@@ -156,3 +156,9 @@ LOGOUT_REDIRECT_URL = '/'
 
 #лимит на загрузку обращение за 1 запрос
 COMPLAINTS_LIST_SIZE = 3
+
+#Максимальное количество обращений за 5 минут -> далее спам
+MAX_COMPLAINTS_COUNT = 1
+
+#Время блокировки за спам (в минутах)
+BAN_FOR_SPAM_TIME = 1

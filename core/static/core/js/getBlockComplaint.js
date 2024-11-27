@@ -30,6 +30,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         <p class="card-text">Текст обращения: ${result.content}</p>
                         <hr>
                         <p class="card-text"><strong>Причина блокировки:</strong> ${result.reason}</p>
+                        <p class="card-text"><strong>Конец блокировки:</strong> ${result.end}</p>
                     </div>
                 </div>
             `;

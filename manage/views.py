@@ -1,7 +1,9 @@
+from babel.dates import format_datetime
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from .models import BlockedUser, UserUnbanRequest
 from complaints.models import Complaint
@@ -86,12 +88,18 @@ def load_banned_complaint(request):
         print(1)
         return JsonResponse({'success': False, 'redirect': '/'})
 
+    end = blockedUser.ended_at
+    if end:
+        end = format_datetime(timezone.localtime(end), "d MMMM HH:mm:ss", locale="ru")
+    else:
+        end = 'Никогда'
     context = {
         'success': True,
         'id': complaint.id,
         'category': complaint.category,
         'content': complaint.content,
         'reason': blockedUser.block_reason,
+        'end': end
     }
     request = UserUnbanRequest.objects.filter(complaint=complaint).filter(Q(review_result='rejected') | Q(review_result='in_work')).first()
     if request:
