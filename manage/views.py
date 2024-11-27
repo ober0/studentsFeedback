@@ -9,6 +9,18 @@ from django.db.models import Q, F, OuterRef, Subquery
 from django.contrib import messages
 
 
+def getAdminName(request):
+    first_name = request.user.first_name
+    if first_name is not None or first_name == '':
+        return 'admin'
+    try:
+        second_name = request.user.last_name[0]
+    except IndexError:
+        second_name = ''
+
+    return first_name + ' ' + second_name + '.'
+
+
 @csrf_exempt
 def check_fingerprint(request):
     if request.method == 'POST':
@@ -123,17 +135,8 @@ def unban_request_create(request):
 def open_complaints(request):
     page = 'Открытые обращения'
     category = request.GET.get('category')
-    
-    
-    first_name = request.user.first_name
-    try:
-        second_name = request.user.last_name[0]
-    except IndexError:
-        second_name = ''
 
-    name = first_name + ' ' + second_name + '.'
-
-
+    name = getAdminName(request)
 
     category = request.GET.get('category')
     filters = {
@@ -161,13 +164,7 @@ def open_need_review_complaints(request):
     page = 'Спам'
     category = request.GET.get('category')
 
-    first_name = request.user.first_name
-    try:
-        second_name = request.user.last_name[0]
-    except IndexError:
-        second_name = ''
-
-    name = first_name + ' ' + second_name + '.'
+    name = getAdminName(request)
 
     category = request.GET.get('category')
     filters = {
@@ -195,13 +192,7 @@ def close_complaints(request):
     page = 'Закрытые'
     category = request.GET.get('category')
 
-    first_name = request.user.first_name
-    try:
-        second_name = request.user.last_name[0]
-    except IndexError:
-        second_name = ''
-
-    name = first_name + ' ' + second_name + '.'
+    name = getAdminName(request)
 
 
     category = request.GET.get('category')
@@ -227,13 +218,9 @@ def close_complaints(request):
 @login_required(login_url=settings.LOGIN_URL)
 def complaint(request, id):
     complaint = Complaint.objects.get(id=id)
-    first_name = request.user.first_name
-    try:
-        second_name = request.user.last_name[0]
-    except IndexError:
-        second_name = ''
 
-    name = first_name + ' ' + second_name + '.'
+    name = getAdminName(request)
+
     context = {
         'complaint': complaint,
         'name': name
@@ -273,6 +260,8 @@ def index(request):
     return redirect('open_complaints')
 
 
+
+
 @login_required(login_url=settings.LOGIN_URL)
 def unban_requests_check(request):
 
@@ -287,13 +276,7 @@ def unban_requests_check(request):
         block_reason=Subquery(blocked_reason_subquery)
     )
 
-    first_name = request.user.first_name
-    try:
-        second_name = request.user.last_name[0]
-    except IndexError:
-        second_name = ''
-
-    name = first_name + ' ' + second_name + '.'
+    name = getAdminName(request)
 
     context = {
         'requests': unban_requests,
@@ -304,4 +287,34 @@ def unban_requests_check(request):
 
 
 def unban_request_check(request, id):
-    return JsonResponse({'id': id})
+    unban_request = UserUnbanRequest.objects.filter(id=id).annotate(
+        name=F('complaint__user_name'),
+        is_anonymous=F('complaint__is_anonymous'),
+        category=F('complaint__category'),
+        text=F('complaint__content'),
+        reason=Subquery(
+            BlockedUser.objects.filter(complaints_spam_id=OuterRef('complaint')).values('block_reason')[:1]
+        ),
+    ).first()
+
+    name = getAdminName(request)
+
+    if unban_request:
+        context = {
+            'unban_request': unban_request,
+            'name': name
+        }
+
+        return render(request, 'manage/unban_request.html', context)
+
+    else:
+        messages.error('Запрос не найден')
+        return redirect('unban_requests')
+
+
+def unban_requests_close(request, id):
+    return JsonResponse({})
+
+
+def unban_requests_approve(request, id):
+    return JsonResponse({})
