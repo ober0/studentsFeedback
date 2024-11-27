@@ -151,6 +151,8 @@ MODERATION_REQUEST_URL = f'{URL}/moderation/auto-check/'
 COMPLAINTS_VIEW_URL = f'{URL}/complaints/'
 VIEW_COMPLAINTS_URL = f'{URL}/complaints/my/'
 
+LOGIN_URL = '/admin/login/'
+LOGOUT_REDIRECT_URL = '/'
 
 #лимит на загрузку обращение за 1 запрос
 COMPLAINTS_LIST_SIZE = 3

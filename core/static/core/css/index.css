@@ -61,7 +61,7 @@ svg{
   background-color: lightgrey;
 }
 
-@media (hover: none) {
+@media (max-width: 1200px) {
   .like-btn:hover {
       background-color: white;
   }
