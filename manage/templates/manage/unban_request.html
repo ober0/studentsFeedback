@@ -22,6 +22,7 @@
     {% endif %}
     <p>{{ unban_request.category }}</p>
     <p>{{ unban_request.text }}</p>
+    <p>Истекает {{ unban_request.ended_at|date:"j E H:i:s" }}</p>
 
     <form action="{% url 'approve_unban_requests' id=unban_request.id %}" method="post">
         {% csrf_token %}

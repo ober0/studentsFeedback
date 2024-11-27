@@ -1,3 +1,5 @@
+from datetime import timedelta
+from complaints.task import unbanUser
 from babel.dates import format_datetime
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -242,6 +244,9 @@ def complaint(request, id):
 def ban(request, id):
     if request.method == 'POST':
         reason = request.POST.get('reason')
+        time = request.POST.get('time')
+        print(time)
+
         if not reason:
             reason = 'Заблокирован администратором'
 
@@ -255,9 +260,23 @@ def ban(request, id):
             complaint.status = 'closed'
             complaint.save()
 
-            block_user = BlockedUser.objects.create(ip_address=ip, device_identifier=fingerprint, block_reason=reason, complaints_spam_id=complaint)
+            if time != 'forever' and time:
+                block_end_time = timezone.now() + timedelta(hours=int(time))
+                print(block_end_time)
+            else:
+                block_end_time = None
+
+            block_user = BlockedUser.objects.create(ip_address=ip, device_identifier=fingerprint, block_reason=reason, complaints_spam_id=complaint, ended_at=block_end_time)
             block_user.save()
-            return JsonResponse({'success':True})
+
+            if time != 'forever':
+                unbanUser.apply_async(
+                    kwargs={'id': block_user.id},
+                    eta=block_end_time
+                )
+
+            messages.success(request, 'Пользователь заблокирован!')
+            return JsonResponse({'success': True})
 
         except Exception as e:
             messages.error(request, f'Ошибка! {str(e)}')
@@ -303,6 +322,7 @@ def unban_request_check(request, id):
         reason=Subquery(
             BlockedUser.objects.filter(complaints_spam_id=OuterRef('complaint')).values('block_reason')[:1]
         ),
+        ended_at=Subquery(BlockedUser.objects.filter(complaints_spam_id=OuterRef('complaint')).values('ended_at')[:1])
     ).first()
 
     name = getAdminName(request)

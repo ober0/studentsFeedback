@@ -158,7 +158,7 @@ LOGOUT_REDIRECT_URL = '/'
 COMPLAINTS_LIST_SIZE = 3
 
 #Максимальное количество обращений за 5 минут -> далее спам
-MAX_COMPLAINTS_COUNT = 1
+MAX_COMPLAINTS_COUNT = 300000
 
 #Время блокировки за спам (в минутах)
-BAN_FOR_SPAM_TIME = 1
+BAN_FOR_SPAM_TIME = 60

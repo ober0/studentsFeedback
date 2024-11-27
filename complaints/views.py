@@ -54,10 +54,11 @@ def create(request):
                 complaint.is_spam = True
                 complaint.save()
 
-            unbanUser.apply_async(
-                kwargs={'id': block_user.id},
-                eta=block_end_time
-            )
+            if block_end_time:
+                unbanUser.apply_async(
+                    kwargs={'id': block_user.id},
+                    eta=block_end_time
+                )
 
             return redirect('/blocked/')
 
