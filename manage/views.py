@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from .models import BlockedUser, UserUnbanRequest
 from complaints.models import Complaint
@@ -270,7 +270,7 @@ def unban_requests_check(request):
     ).values('block_reason')[:1]
 
     # Основной запрос с аннотациями
-    unban_requests = UserUnbanRequest.objects.annotate(
+    unban_requests = UserUnbanRequest.objects.filter(review_result='in_work').annotate(
         is_anonymous=F('complaint__is_anonymous'),
         user_name=F('complaint__user_name'),
         block_reason=Subquery(blocked_reason_subquery)
@@ -308,13 +308,38 @@ def unban_request_check(request, id):
         return render(request, 'manage/unban_request.html', context)
 
     else:
-        messages.error('Запрос не найден')
+        messages.error(request, 'Запрос не найден')
         return redirect('unban_requests')
 
 
 def unban_requests_close(request, id):
-    return JsonResponse({})
+    user_unban_request = get_object_or_404(UserUnbanRequest, id=id)
+    try:
+        user_unban_request.review_result = 'rejected'
+        user_unban_request.reviewed_by = request.user
+        user_unban_request.save()
+        messages.success(request, 'Заявка отклонена')
+    except Exception as e:
+        messages.error(request, f'Ошибка: {str(e)}')
+
+    return redirect('unban_requests')
 
 
 def unban_requests_approve(request, id):
-    return JsonResponse({})
+    user_unban_request = get_object_or_404(UserUnbanRequest, id=id)
+
+    blocked_user = BlockedUser.objects.filter(complaints_spam_id=user_unban_request.complaint).first()
+
+    if blocked_user:
+        try:
+            blocked_user.delete()
+            user_unban_request.review_result = 'unbanned'
+            user_unban_request.reviewed_by = request.user
+            user_unban_request.save()
+            messages.success(request, 'Пользователь разблокирован')
+        except Exception as e:
+            messages.error(request, f'Ошибка: {str(e)}')
+    else:
+        messages.error(request, f'Ошибка: Пользователь не найден')
+
+    return redirect('unban_requests')
