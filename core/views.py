@@ -143,7 +143,6 @@ def my_complaints(request):
     student_id = request.session.get('student_id')
     student = Students.objects.filter(id=int(student_id)).first()
 
-
     context = {
         'user_id': student_id,
         'email': student.email
@@ -226,12 +225,24 @@ def loadmore_my(request):
             student_id = request.session.get('student_id')
             student = Students.objects.filter(id=int(student_id)).first()
 
+            data = request.POST
+
+            x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+            if x_forwarded_for:
+                ip = x_forwarded_for.split(',')[0]
+            else:
+                ip = request.META.get('REMOTE_ADDR')
+
+            pskey = data.get('pskey')
+
             if not student:
                 return JsonResponse({'success': False, 'error': 'Пользователь не найден'})
 
             # Обрабатываем параметры поиска
             search_query = request.GET.get('search', '')
             escaped_search_query = re.escape(search_query)
+
+
 
             # Получаем жалобы
             complaints1 = Complaint.objects.filter(user=student, is_spam=False).filter(
@@ -242,14 +253,26 @@ def loadmore_my(request):
                 Q(content__iregex=escaped_search_query) | Q(category__iregex=escaped_search_query)
             ).distinct()
 
+            complaints3 = Complaint.objects.filter(ip_address=ip, is_spam=False).filter(
+                Q(content__iregex=escaped_search_query) | Q(category__iregex=escaped_search_query)
+            ).distinct()
+
+            complaints4 = Complaint.objects.filter(device_identifier=pskey, is_spam=False).filter(
+                Q(content__iregex=escaped_search_query) | Q(category__iregex=escaped_search_query)
+            ).distinct()
+
             # Объединяем запросы без вызова distinct()
-            complaints = list(complaints1.union(complaints2).order_by('-created_at'))
+            complaints1_2 = complaints1.union(complaints2)
+            complaints3_4 = complaints3.union(complaints4)
+
+            # Сортируем окончательный результат
+            complaints = list(complaints1_2.union(complaints3_4).order_by('-created_at'))
+
             complaints_count_all = len(complaints)
             complaints = complaints[start: start + settings.COMPLAINTS_LIST_SIZE]
 
             # Убираем дубликаты вручную
             unique_complaints = {complaint.id: complaint for complaint in complaints}.values()
-
             # Преобразуем жалобы в JSON-формат
             complaints_data = []
             for complaint in unique_complaints:

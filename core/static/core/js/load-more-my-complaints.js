@@ -1,21 +1,33 @@
 document.addEventListener('DOMContentLoaded', function () {
     let isLoading = false;
 
-    function loadMoreContent() {
+    async function loadMoreContent() {
         if (isLoading) return;
 
         isLoading = true;
+
+        const fp = await FingerprintJS.load();
+        const result = await fp.get();
+        const visitorId = result.visitorId;
+
         let complaintCount = document.querySelectorAll('.complaint').length;
 
         // Формируем данные для отправки
         const formData = new FormData();
         formData.append('start', Number(complaintCount));
-
+        formData.append('pskey', visitorId)
         // Получаем CSRF токен
         const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
 
+        const url = new URL(window.location.href);
+        const searchParams = url.searchParams;
+        let searchQuery = searchParams.get('search');
+        if (searchQuery === null){
+            searchQuery = ''
+        }
+
         // Выполняем POST-запрос
-        fetch(`/loadmore/my/`, {
+        fetch(`/loadmore/my/?search=${searchQuery}`, {
             method: 'POST',
             headers: {
                 'X-CSRFToken': csrfToken

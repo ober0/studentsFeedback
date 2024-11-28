@@ -90,11 +90,12 @@ def load_banned_complaint(request):
         return JsonResponse({'success': False, 'redirect': '/'})
 
     end = blockedUser.ended_at
-    if end < timezone.now():
-        blockedUser.delete()
-        return JsonResponse({'success': False, 'redirect': '/complaints/create/'})
 
     if end:
+        if end < timezone.now():
+            blockedUser.delete()
+            return JsonResponse({'success': False, 'redirect': '/complaints/create/'})
+
         end = format_datetime(timezone.localtime(end), "d MMMM HH:mm:ss", locale="ru")
     else:
         end = 'Никогда'
