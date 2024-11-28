@@ -1,26 +1,47 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Просмотр обращения</title>
+    <link rel="stylesheet" href="{% static 'core/css/base.css' %}">
 </head>
 <body>
-1
-{{ complaint.category }}
-{{ complaint.content }}
-{% if complaint.is_anonymous %}
-    Анонимное обращение
-{% else %}
-    {{ complaint.user_name }}
-    {{ complaint.user_group }}
-{% endif %}
-
-Опубликовано - {{ complaint.is_published }}
-{{ complaint.status }}
-{% if complaint.response_text %}
-    {{ complaint.response_text }}
-{% else %}
-    Нет ответа
-{% endif %}
+    {% include 'core/header.html' %}
+    <main style="max-width: 960px !important;" class="container">
+        <div class="complaint" cid="{{ complaint.id }}">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        {% if complaint.is_anonymous %}
+                            Анонимное обращение
+                        {% else %}
+                            {{ complaint.user_name }}
+                        {% endif %}
+                    </h5>
+                    <h6 class="card-subtitle mb-2 text-muted">
+                        <strong>Категория:</strong> {{ complaint.category }}
+                    </h6>
+                    <p class="card-text">
+                        <strong>Текст обращения:</strong> {{ complaint.content }}
+                    </p>
+                    {% if complaint.is_published %}
+                        <p style="color: lawngreen">✔ Опубликовано</p>
+                    {% else %}
+                        <p style="color: red">❌ Не опубликовано</p>
+                    {% endif %}
+                    <hr>
+                    {% if complaint.response_text %}
+                        <p><strong>Ответ администратора:</strong> {{ complaint.response_text }}</p>
+                    {% else %}
+                        <p><strong>Не просмотрено администрацией</strong></p>
+                    {% endif %}
+                    <p class="text-muted">Дата создания: {{ complaint.created_at }}</p>
+                </div>
+            </div>
+        </div>
+    </main>
+    {% include 'core/footer.html' %}
 </body>
 </html>

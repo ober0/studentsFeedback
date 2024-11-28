@@ -58,35 +58,35 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Функция для создания HTML одной жалобы
     function createComplaint(complaint) {
-    const isAnonymous = complaint.is_anonymous;
-    const responseText = complaint.response_text || "Нет ответа";
-    const publishedStatus = complaint.is_published ?
-        `<p style="color: lawngreen">✔ Опубликовано</p>` :
-        `<p style="color: red">❌ Не опубликовано</p>`;
-    const responseTextHtml = complaint.response_text ?
-        `<p><strong>Ответ администратора: </strong>${responseText}</p>` :
-        `<p><strong>Не просмотрено администрацией</strong></p>`;
+        const isAnonymous = complaint.is_anonymous;
+        const responseText = complaint.response_text || "Нет ответа";
+        const publishedStatus = complaint.is_published ?
+            `<p style="color: lawngreen">✔ Опубликовано</p>` :
+            `<p style="color: red">❌ Не опубликовано</p>`;
+        const responseTextHtml = complaint.response_text ?
+            `<p><strong>Ответ администратора: </strong>${responseText}</p>` :
+            `<p><strong>Не просмотрено администрацией</strong></p>`;
 
-    return `
-        <div class="complaint" cid="${complaint.id}">
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h5 class="card-title">
-                        ${isAnonymous ? "Анонимное обращение" : complaint.user_name}
-                    </h5>
-                    <h6 class="card-subtitle mb-2 text-muted">
-                        <strong>Категория:</strong> ${complaint.category}
-                    </h6>
-                    <p class="card-text">
-                        <strong>Текст обращения:</strong> ${complaint.content}
-                    </p>
-                    ${complaint.is_public ? publishedStatus : ""}
-                    <hr>
-                    ${responseTextHtml}
-                    <p class="text-muted">Дата создания: ${complaint.created_at}</p>
+        return `
+            <div class="complaint" cid="${complaint.id}">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            ${isAnonymous ? "Анонимное обращение" : complaint.user_name}
+                        </h5>
+                        <h6 class="card-subtitle mb-2 text-muted">
+                            <strong>Категория:</strong> ${complaint.category}
+                        </h6>
+                        <p class="card-text">
+                            <strong>Текст обращения:</strong> ${complaint.content}
+                        </p>
+                        ${complaint.is_public ? publishedStatus : ""}
+                        <hr>
+                        ${responseTextHtml}
+                        <p class="text-muted">Дата создания: ${complaint.created_at}</p>
+                    </div>
                 </div>
             </div>
-        </div>
     `;
 }
 
