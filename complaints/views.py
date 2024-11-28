@@ -26,6 +26,7 @@ def create(request):
         pskey = data.get('pskey')
 
         if not pskey:
+            messages.error(request, 'Внутренняя ошибка. Перезагрузите страницу')
             return redirect('/')
 
         isBlocked_ip = BlockedUser.objects.filter(ip_address=ip).exists()
@@ -190,7 +191,7 @@ def add_response(request, id):
                 send_email.delay(email=complaint.email_for_reply, text=text, header=header)
         except:
             messages.error(request, 'Ошибка.')
-
+        messages.success(request, 'Ответ отправлен')
         return redirect('/manage/complaint/open/')
 
 def like(request):
@@ -203,6 +204,7 @@ def like(request):
                 student = Students.objects.get(id=student_id)
                 like = ComplaintLike.objects.create(complaint=complaint, user=student)
                 like.save()
+
                 return JsonResponse({'success': True})
             except Exception as e:
                 messages.error(request, str(e))
