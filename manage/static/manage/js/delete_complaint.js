@@ -11,7 +11,13 @@ document.getElementById('remove_complaint').addEventListener('click', function (
         .then(response => response.json())
         .then(result => {
             if (result.success) {
-                window.location.href = '/manage/complaint/open/';
+                let next = document.getElementById('next').value
+                if (next){
+                    window.location.href = next;
+                }
+                else {
+                    window.location.href = '/manage/complaint/open/';
+                }
             }
         })
 })

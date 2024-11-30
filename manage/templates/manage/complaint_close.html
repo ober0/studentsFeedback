@@ -1,35 +1,52 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Обращение #{{ complaint.id }}</title>
     <link rel="icon" href="{% static 'core/img/favicon.ico' %}" type="image/x-icon">
-
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'core/css/base.css' %}">
 </head>
 <body>
-{% include 'manage/header.html' %}
-    {% block admin_header %} {% endblock %}
+    {% include 'manage/header.html' %}
+    {% block admin_header %}{% endblock %}
 
-<main>
-    <input type="hidden" id="id" value="{{ complaint.id }}">
-{{ complaint.category }}
-    {{ complaint.content }}
+    <main class="">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Обращение #{{ complaint.id }}</h5>
+            </div>
+            <div class="card-body">
+                <h6 class="card-subtitle mb-2 text-muted">Категория: {{ complaint.category }}</h6>
+                <p class="card-text">{{ complaint.content }}</p>
+                <hr>
+                <p><strong>Отправитель:</strong>
+                    {% if complaint.is_anonymous %}
+                        Анонимно
+                    {% else %}
+                        {{ complaint.user_name }} ({{ complaint.user_group }})
+                    {% endif %}
+                </p>
+                <hr>
+                <p><strong>Ответ администратора:</strong> {{ complaint.response_text }}</p>
+                <p class="text-muted"><strong>Администратор:</strong> {{ complaint.admin }}</p>
+            </div>
+            <div class="card-footer text-left">
+                {% csrf_token %}
+                <input type="hidden" name="id" value="{{ complaint.id }}" id="id">
+                <input type="hidden" name="next" id="next" value="/manage/complaint/close/">
+                <button id="remove_complaint" class="btn btn-danger">Удалить</button>
+            </div>
+        </div>
+    </main>
 
-    {% if complaint.is_anonymous == False %}
-        {{ complaint.user_name }}
-        {{ complaint.user_group }}
-    {% else %}
-        Анонимно
-    {% endif %}
+    {% include 'manage/footer.html' %}
+    {% block admin_footer %}{% endblock %}
 
-
-
-    {{ complaint.response_text }}
-    {{ complaint.admin }}
-</main>
-
-{% include 'manage/footer.html' %}
-{% block admin_footer %} {% endblock %}
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'manage/js/delete_complaint.js' %}"></script>
 </body>
 </html>
