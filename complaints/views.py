@@ -1,3 +1,5 @@
+from functools import wraps
+
 from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth.decorators import login_required
@@ -13,7 +15,17 @@ from django.conf import settings
 from django.contrib import messages
 from core.task import send_email
 
-# Create your views here.
+
+def staff_or_superuser_required(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser):
+            return view_func(request, *args, **kwargs)
+        else:
+            return redirect(settings.LOGIN_URL) 
+    return _wrapped_view
+
+
 def create(request):
     if request.method == 'POST':
         data = request.POST
@@ -155,7 +167,7 @@ def create(request):
         messages.success(request, 'Обращение создано')
         return redirect('/')
 
-@login_required(login_url=settings.LOGIN_URL)
+@staff_or_superuser_required
 def delete(request, id):
     if request.method == 'POST':
         try:
@@ -166,7 +178,7 @@ def delete(request, id):
             messages.error(request, 'Ошибка при удалении записи.')
             return JsonResponse({'success': False})
 
-@login_required(login_url=settings.LOGIN_URL)
+@staff_or_superuser_required
 def add_response(request, id):
     if request.method == 'POST':
         is_published = request.POST.get('is_published')
@@ -239,4 +251,14 @@ def complaint(request, key):
     return redirect('index')
 
 
-
+@staff_or_superuser_required
+def delete_public(request, id):
+    if request.method == 'POST':
+        try:
+            complaint = Complaint.objects.filter(id=id).first()
+            complaint.is_published = False
+            complaint.save()
+            return JsonResponse({'success': True})
+        except:
+            messages.error(request, 'Ошибка при удалении записи со стены.')
+            return JsonResponse({'success': False})

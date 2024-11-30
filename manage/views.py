@@ -1,9 +1,13 @@
 from datetime import timedelta
+from functools import wraps
+
+from django.utils.http import urlencode
+
 from complaints.task import unbanUser
 from babel.dates import format_datetime
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
@@ -24,6 +28,22 @@ def getAdminName(request):
 
     return first_name + ' ' + second_name + '.'
 
+
+def staff_or_superuser_required(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser):
+            return view_func(request, *args, **kwargs)
+        else:
+            if not request.user.is_authenticated:
+                next_url = request.get_full_path()  # Получаем текущий путь
+                login_url_with_next = f"{settings.LOGIN_URL}?{urlencode({'next': next_url})}"
+                return HttpResponseRedirect(login_url_with_next)
+
+            # Если пользователь не имеет доступа (не staff и не superuser)
+            return redirect('')
+
+    return _wrapped_view
 
 @csrf_exempt
 def check_fingerprint(request):
@@ -145,7 +165,7 @@ def unban_request_create(request):
             return redirect('/blocked/')
 
 
-@login_required(login_url=settings.LOGIN_URL)
+@staff_or_superuser_required
 def open_complaints(request):
     page = 'Открытые обращения'
     category = request.GET.get('category')
@@ -173,7 +193,7 @@ def open_complaints(request):
     return render(request, 'manage/complaints_list.html', context)
 
 
-@login_required(login_url=settings.LOGIN_URL)
+@staff_or_superuser_required
 def open_need_review_complaints(request):
     page = 'Спам'
     category = request.GET.get('category')
@@ -201,7 +221,7 @@ def open_need_review_complaints(request):
     return render(request, 'manage/complaints_list.html', context)
 
 
-@login_required(login_url=settings.LOGIN_URL)
+@staff_or_superuser_required
 def close_complaints(request):
     page = 'Закрытые'
     category = request.GET.get('category')
@@ -229,7 +249,7 @@ def close_complaints(request):
     return render(request, 'manage/complaints_list.html', context)
 
 
-@login_required(login_url=settings.LOGIN_URL)
+@staff_or_superuser_required
 def complaint(request, id):
     complaint = Complaint.objects.get(id=id)
 
@@ -244,7 +264,7 @@ def complaint(request, id):
         return render(request, 'manage/complaint_open.html', context)
     else:
         return render(request, 'manage/complaint_close.html', context)
-@login_required(login_url=settings.LOGIN_URL)
+@staff_or_superuser_required
 def ban(request, id):
     if request.method == 'POST':
         reason = request.POST.get('reason')
@@ -286,14 +306,14 @@ def ban(request, id):
             messages.error(request, f'Ошибка! {str(e)}')
             return JsonResponse({'success': False})
 
-@login_required(login_url=settings.LOGIN_URL)
+@staff_or_superuser_required
 def index(request):
     return redirect('open_complaints')
 
 
 
 
-@login_required(login_url=settings.LOGIN_URL)
+@staff_or_superuser_required
 def unban_requests_check(request):
 
     blocked_reason_subquery = BlockedUser.objects.filter(

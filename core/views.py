@@ -204,13 +204,14 @@ def loadmore(request):
                     'created_at': format_datetime(complaint.created_at, "d MMMM yyyy, HH:mm", locale="ru") if complaint.created_at else None,
                     'liked': complaint.liked,
                     'like_count': complaint.like_count,
-                    'link': link
+                    'link': link,
                 })
 
             context = {
                 'success': True,
                 'complaints_count': complaints_count_all,
-                'complaints': complaints_data
+                'complaints': complaints_data,
+                'is_admin': request.user.is_staff,
             }
 
         except Exception as e:

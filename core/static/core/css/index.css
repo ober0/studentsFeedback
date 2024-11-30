@@ -50,7 +50,7 @@ svg{
 
 
 
-.like-btn, .repost-btn{
+.like-btn, .repost-btn, .delete-btn{
   display: flex;
   gap:5px;
   border-radius: 20px;
@@ -62,19 +62,26 @@ svg{
   transition: background-color 0.2s;
 }
 
-.like-btn:hover, .repost-btn:hover{
+
+.like-btn:hover, .repost-btn:hover, .delete-btn:hover{
   background-color: lightgrey;
 }
 
 @media (max-width: 1200px) {
-  .like-btn:hover, .repost-btn:hover{
+  .like-btn:hover, .repost-btn:hover, .delete-btn:hover{
       background-color: white;
   }
 }
 
-.buttons{
+.buttons {
   display: flex;
   gap: 10px;
+  flex-wrap: wrap; /* Позволяет кнопкам переноситься на новую строку */
+}
+
+.buttons button:last-child {
+  margin-top: 10px; /* Отступ для последней кнопки, чтобы визуально выделить её на новой строке */
+  flex-basis: 100%; /* Заставляет последнюю кнопку занимать всю ширину строки */
 }
 
 .repost-open {
