@@ -1,11 +1,23 @@
 function repost(src) {
-    const content = document.querySelector('content');
+    const main = document.querySelector('main');
+    const header = document.querySelector('header');
+    const footer = document.querySelector('footer');
     const shareMenu = document.querySelector('.repost-open');
 
     // Затемняем основной контент
-    if (content) {
-        content.style.opacity = '0.1';
-        content.classList.add('no-scroll');
+    if (main) {
+        main.style.opacity = '0.1';
+        main.classList.add('no-scroll');
+    }
+
+    if (header) {
+        header.style.opacity = '0.1';
+        header.classList.add('no-scroll');
+    }
+
+    if (footer) {
+        footer.style.opacity = '0.1';
+        footer.classList.add('no-scroll');
     }
 
     // Отображаем меню
@@ -85,11 +97,24 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function hiderepost() {
-    // Сбрасываем стиль `content`
-    const content = document.querySelector('content');
-    if (content) {
-        content.style.opacity = '1';
-        content.classList.remove('no-scroll');
+   const main = document.querySelector('main');
+    const header = document.querySelector('header');
+    const footer = document.querySelector('footer');
+
+    // Затемняем основной контент
+    if (main) {
+        main.style.opacity = '1';
+        main.classList.remove('no-scroll');
+    }
+
+    if (header) {
+        header.style.opacity = '1';
+        header.classList.remove('no-scroll');
+    }
+
+    if (footer) {
+        footer.style.opacity = '1';
+        footer.classList.remove('no-scroll');
     }
 
     // Скрываем меню
