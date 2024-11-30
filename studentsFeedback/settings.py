@@ -146,7 +146,7 @@ EMAIL_HOST_USER = 'AbuBandit1112@yandex.ru'
 EMAIL_HOST_PASSWORD = 'lkmvlfzmkrpbxxkx'
 DEFAULT_FROM_EMAIL = 'AbuBandit1112@yandex.ru'
 
-URL = 'http://192.168.137.222:8000'
+URL = 'http://127.0.0.1:8000'
 MODERATION_REQUEST_URL = f'{URL}/moderation/auto-check/'
 COMPLAINTS_VIEW_URL = f'{URL}/complaints/'
 VIEW_COMPLAINTS_URL = f'{URL}/complaints/my/'
@@ -155,7 +155,7 @@ LOGIN_URL = '/admin/login/'
 LOGOUT_REDIRECT_URL = '/'
 
 #лимит на загрузку обращение за 1 запрос
-COMPLAINTS_LIST_SIZE = 15
+COMPLAINTS_LIST_SIZE = 2
 
 #Максимальное количество обращений за 5 минут -> далее спам
 MAX_COMPLAINTS_COUNT = 3

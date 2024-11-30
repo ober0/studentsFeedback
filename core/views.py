@@ -193,6 +193,7 @@ def loadmore(request):
             # Формирование данных для ответа
             complaints_data = []
             for complaint in complaints:
+                link = settings.COMPLAINTS_VIEW_URL + complaint.reply_code + '/'
                 complaints_data.append({
                     'id': complaint.id,
                     'is_anonymous': complaint.is_anonymous,
@@ -202,7 +203,8 @@ def loadmore(request):
                     'response_text': complaint.response_text or None,
                     'created_at': format_datetime(complaint.created_at, "d MMMM yyyy, HH:mm", locale="ru") if complaint.created_at else None,
                     'liked': complaint.liked,
-                    'like_count': complaint.like_count
+                    'like_count': complaint.like_count,
+                    'link': link
                 })
 
             context = {
@@ -276,6 +278,7 @@ def loadmore_my(request):
             # Преобразуем жалобы в JSON-формат
             complaints_data = []
             for complaint in unique_complaints:
+                link = settings.COMPLAINTS_VIEW_URL + complaint.reply_code + '/'
                 complaints_data.append({
                     'id': complaint.id,
                     'is_anonymous': complaint.is_anonymous,
@@ -288,6 +291,7 @@ def loadmore_my(request):
                     ) if complaint.created_at else None,
                     'is_published': complaint.is_published,
                     'is_public': complaint.is_public,
+                    'link': link
                 })
 
             return JsonResponse({'success': True, 'complaints_count': complaints_count_all, 'complaints': complaints_data})

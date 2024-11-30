@@ -37,7 +37,12 @@ input:focus,button:focus,select:focus {
 }
 
 
-
+content.no-scroll {
+    overflow: hidden;
+    opacity: 0.1;
+    pointer-events: none;
+    user-select: none;
+}
 
 svg{
   cursor: pointer;
@@ -45,7 +50,7 @@ svg{
 
 
 
-.like-btn{
+.like-btn, .repost-btn{
   display: flex;
   gap:5px;
   border-radius: 20px;
@@ -57,12 +62,104 @@ svg{
   transition: background-color 0.2s;
 }
 
-.like-btn:hover{
+.like-btn:hover, .repost-btn:hover{
   background-color: lightgrey;
 }
 
 @media (max-width: 1200px) {
-  .like-btn:hover {
+  .like-btn:hover, .repost-btn:hover{
       background-color: white;
   }
 }
+
+.buttons{
+  display: flex;
+  gap: 10px;
+}
+
+.repost-open {
+    position: fixed; /* Центрирование на экране */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none; /* Скрыто по умолчанию */
+    z-index: 1000; /* Поверх остального контента */
+    background: #fff; /* Белый фон */
+    padding: 30px; /* Увеличенное внутреннее отступление */
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2); /* Улучшенная тень */
+    border-radius: 12px; /* Скруглённые углы */
+    width: 320px; /* Ширина модального окна */
+    text-align: center; /* Центрирование текста */
+}
+
+/* Стиль заголовка */
+.repost-open h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: #333; /* Более тёмный цвет */
+}
+
+/* Стиль кнопок */
+.repost-open .btn {
+    width: 100%;
+    margin-bottom: 10px; /* Отступ между кнопками */
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+/* Кнопка закрытия (крестик) */
+.btn-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #999;
+    cursor: pointer;
+}
+
+.btn-close:hover {
+    color: #333; /* Более насыщенный цвет при наведении */
+}
+
+/* Дополнительный стиль для кнопок */
+.repost-open .btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.repost-open .btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+}
+
+
+.button{
+    margin-bottom: 10px;
+    width: 320px;
+}
+
+@media (max-width: 370px) {
+    .button{
+        width: 260px;
+    }
+}
+
+@media (max-width: 310px) {
+    .button{
+        width: 210px;
+    }
+}
+
+@media (max-width: 250px) {
+    .button{
+        width: 100%;
+    }
+}
+

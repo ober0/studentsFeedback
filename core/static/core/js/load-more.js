@@ -68,20 +68,34 @@ document.addEventListener('DOMContentLoaded', function () {
                         <p class="text-muted">
                             Дата создания: ${complaint.created_at}
                         </p>
-                        <div id="${complaint.liked ? "unlike" : "like"}" class="like-btn">
-                            <svg height="26" viewBox="0 0 24 24" width="26" xmlns="http://www.w3.org/2000/svg">
-                                <g fill="none" fill-rule="evenodd">
-                                    <path d="M0 0h24v24H0z"></path>
-                                    <path 
-                                        d="M16 4a5.95 5.95 0 0 0-3.89 1.7l-.12.11-.12-.11A5.96 5.96 0 0 0 7.73 4 5.73 5.73 0 0 0 2 9.72c0 3.08 1.13 4.55 6.18 8.54l2.69 2.1c.66.52 1.6.52 2.26 0l2.36-1.84.94-.74c4.53-3.64 5.57-5.1 5.57-8.06A5.73 5.73 0 0 0 16.27 4z"
-                                        class="like-svg ${complaint.liked ? "like-press" : "like-no-press"}"></path>
-                                </g>
-                            </svg>
-                            <span style="user-select: none" id="counter-${complaint.id}">
-                                ${complaint.like_count}
-                            </span>
+                        <div class="buttons">
+                            <div id="${complaint.liked ? "unlike" : "like"}" class="like-btn">
+                                <svg height="26" viewBox="0 0 24 24" width="26" xmlns="http://www.w3.org/2000/svg">
+                                    <g fill="none" fill-rule="evenodd">
+                                        <path d="M0 0h24v24H0z"></path>
+                                        <path 
+                                            d="M16 4a5.95 5.95 0 0 0-3.89 1.7l-.12.11-.12-.11A5.96 5.96 0 0 0 7.73 4 5.73 5.73 0 0 0 2 9.72c0 3.08 1.13 4.55 6.18 8.54l2.69 2.1c.66.52 1.6.52 2.26 0l2.36-1.84.94-.74c4.53-3.64 5.57-5.1 5.57-8.06A5.73 5.73 0 0 0 16.27 4z"
+                                            class="like-svg ${complaint.liked ? "like-press" : "like-no-press"}"></path>
+                                    </g>
+                                </svg>
+                                <span style="user-select: none" id="counter-${complaint.id}">
+                                    ${complaint.like_count}
+                                </span>
+                            </div>
+                            
+                            <div class="repost-btn" link="${complaint.link}">
+                                 <svg height="26" viewBox="0 0 24 24" width="26" xmlns="http://www.w3.org/2000/svg">
+                                     <g fill="none" fill-rule="evenodd">
+                                         <path d="M0 0h24v24H0z"></path>
+                                         <path d="M12 3.73c-1.12.07-2 1-2 2.14v2.12h-.02a9.9 9.9 0 0 0-7.83 10.72.9.9 0 0 0 1.61.46l.19-.24a9.08 9.08 0 0 1 5.84-3.26l.2-.03.01 2.5a2.15 2.15 0 0 0 3.48 1.69l7.82-6.14a2.15 2.15 0 0 0 0-3.38l-7.82-6.13c-.38-.3-.85-.46-1.33-.46zm.15 1.79c.08 0 .15.03.22.07l7.82 6.14a.35.35 0 0 1 0 .55l-7.82 6.13a.35.35 0 0 1-.57-.28V14.7a.9.9 0 0 0-.92-.9h-.23l-.34.02c-2.28.14-4.4.98-6.12 2.36l-.17.15.02-.14a8.1 8.1 0 0 1 6.97-6.53.9.9 0 0 0 .79-.9V5.87c0-.2.16-.35.35-.35z" fill="currentColor" fill-rule="nonzero"></path>
+                                     </g>
+                                 </svg>
+                                 <span style="user-select: none">
+                                    Поделиться
+                                 </span>
+                            </div>
                         </div>
-                    </div>
+                        
                 </div>
             </div>
         `;

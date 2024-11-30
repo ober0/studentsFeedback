@@ -81,10 +81,10 @@ def create(request):
         response_method = data['response-method']
         if response_method == 'email':
             email = data['email']
-            link = None
         else:
-            link = request.POST.get('link')
             email = None
+
+        link = request.POST.get('link')
 
         publish = True if data.get('publish') else False
 
@@ -232,8 +232,6 @@ def unlike(request):
 
 
 def complaint(request, key):
-    print(key)
-    complaint1 = Complaint.objects.get(id=56).reply_code
     complaint = Complaint.objects.filter(reply_code=key).first()
     if complaint:
         context = {'complaint': complaint}

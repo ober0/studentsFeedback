@@ -1,3 +1,5 @@
+import secrets
+
 from django.db import models
 from cryptography.fernet import Fernet
 from django.conf import settings
@@ -11,7 +13,7 @@ class Complaint(models.Model):
     user_group = models.CharField(max_length=100, blank=True, null=True)
     is_anonymous = models.BooleanField(default=False, verbose_name='Анонимно')
     email_for_reply = models.EmailField(blank=True, null=True, verbose_name='Email для ответа')
-    reply_code = models.CharField(max_length=100, unique=True, blank=True, null=True, verbose_name='Код жалобы')
+    reply_code = models.CharField(max_length=100, unique=False, blank=False, null=False, verbose_name='Код жалобы', default=secrets.token_hex(32))
     is_public = models.BooleanField(default=False, verbose_name='Публичная')
     is_published = models.BooleanField(default=False, verbose_name='Опубликована')
     status = models.CharField(max_length=50, choices=[('open', 'Открыта'), ('closed', 'Закрыта')], default='open', verbose_name='Статус')
@@ -22,6 +24,7 @@ class Complaint(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     response_text = models.TextField(verbose_name='Текст ответа', null=True, blank=True)
     admin = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Администратор')
+
 
     def __str__(self):
         return f"Обращение {self.id}"
