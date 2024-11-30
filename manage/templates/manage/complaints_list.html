@@ -1,97 +1,96 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-    <link rel="icon" href="{% static 'core/img/favicon.ico' %}" type="image/x-icon">
     <meta charset="UTF-8">
+    <title>Обращения</title>
+    <link rel="icon" href="{% static 'core/img/favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        .tr-comp{
+        .tr-comp {
             cursor: pointer;
         }
-        .tr-comp:hover{
-            background-color: lightblue;
-        }
     </style>
-    <title>Обращения</title>
 </head>
 <body>
     {% include 'manage/header.html' %}
-    {% block admin_header %} {% endblock %}
+    {% block admin_header %}{% endblock %}
 
-    <main>
+    <main class="container mt-4">
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <select id="category" name="category" class="form-control">
+                    <option value="" {% if category == None or category == '' %}selected{% endif %}>Все категории</option>
+                    <option value="Жалоба" {% if category == 'Жалоба' %}selected{% endif %}>Жалоба</option>
+                    <option value="Вопрос" {% if category == 'Вопрос' %}selected{% endif %}>Вопрос</option>
+                    <option value="Проблемы с преподавателем" {% if category == 'Проблемы с преподавателем' %}selected{% endif %}>Проблемы с преподавателем</option>
+                    <option value="Столовая" {% if category == 'Столовая' %}selected{% endif %}>Столовая</option>
+                    <option value="Проблемы с расписанием" {% if category == 'Проблемы с расписанием' %}selected{% endif %}>Проблемы с расписанием</option>
+                    <option value="Предложение мероприятия" {% if category == 'Предложение мероприятия' %}selected{% endif %}>Предложение мероприятия</option>
+                    <option value="Здоровье и безопасность" {% if category == 'Здоровье и безопасность' %}selected{% endif %}>Здоровье и безопасность</option>
+                    <option value="Вопросы карьеры и стажировки" {% if category == 'Вопросы карьеры и стажировки' %}selected{% endif %}>Вопросы карьеры и стажировки</option>
+                    <option value="Другое" {% if category == 'Другое' %}selected{% endif %}>Другое</option>
+                </select>
+            </div>
+        </div>
 
-    <select id="category" name="category">
-        <option value="" {% if category == None or category == '' %}selected{% endif %}>Все</option>
-        <option value="Жалоба" {% if category == 'Жалоба' %}selected{% endif %}>Жалоба</option>
-        <option value="Вопрос" {% if category == 'Вопрос' %}selected{% endif %}>Вопрос</option>
-        <option value="Проблемы с преподавателем" {% if category == 'Проблемы с преподавателем' %}selected{% endif %}>Проблемы с преподавателем</option>
-        <option value="Столовая" {% if category == 'Столовая' %}selected{% endif %}>Столовая</option>
-        <option value="Проблемы с расписанием" {% if category == 'Проблемы с расписанием' %}selected{% endif %}>Проблемы с расписанием</option>
-        <option value="Предложение мероприятия" {% if category == 'Предложение мероприятия' %}selected{% endif %}>Предложение мероприятия</option>
-        <option value="Здоровье и безопасность" {% if category == 'Здоровье и безопасность' %}selected{% endif %}>Здоровье и безопасность</option>
-        <option value="Вопросы карьеры и стажировки" {% if category == 'Вопросы карьеры и стажировки' %}selected{% endif %}>Вопросы карьеры и стажировки</option>
-        <option value="Другое" {% if category == 'Другое' %}selected{% endif %}>Другое</option>
-
-    </select>
-    <br>
-    <table>
-        <thead>
-            <tr>
-                <th>№</th>
-                <th>Категория</th>
-                <th>Имя</th>
-                <th>Группа</th>
-                <th>Создана</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for complaint in complaints %}
-            <tr class="tr-comp" id="{{ complaint.id }}">
-                <td>{{ complaint.id }}</td>
-                <td>{{ complaint.category }}</td>
-                <td>
-                    {% if complaint.is_anonymous == False %}
-                        {{ complaint.user_name }}
-                    {% else %}
-                        Анонимно
-                    {% endif %}
-                </td>
-                <td>
-                    {% if complaint.is_anonymous == False %}
-                        {{ complaint.user_group }}
-                    {% else %}
-                        Анонимно
-                    {% endif %}
-                </td>
-                <td>{{ complaint.created_at }}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="thead-light">
+                    <tr>
+                        <th scope="col">№</th>
+                        <th scope="col">Категория</th>
+                        <th scope="col">Имя</th>
+                        <th scope="col">Группа</th>
+                        <th scope="col">Создана</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for complaint in complaints %}
+                        <tr class="tr-comp" id="{{ complaint.id }}">
+                            <td>{{ complaint.id }}</td>
+                            <td>{{ complaint.category }}</td>
+                            <td>
+                                {% if not complaint.is_anonymous %}
+                                    {{ complaint.user_name }}
+                                {% else %}
+                                    Анонимно
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if not complaint.is_anonymous %}
+                                    {{ complaint.user_group }}
+                                {% else %}
+                                    Анонимно
+                                {% endif %}
+                            </td>
+                            <td>{{ complaint.created_at }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </main>
+
     {% include 'manage/footer.html' %}
-    {% block admin_footer %} {% endblock %}
+    {% block admin_footer %}{% endblock %}
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.querySelectorAll('.tr-comp').forEach(row => {
+            row.addEventListener('click', function () {
+                const id = this.id;
+                window.location.href = `/manage/complaint/${id}/`;
+            });
+        });
+
+        document.getElementById('category').addEventListener('change', function() {
+            const category = this.value;
+            const url = new URL(window.location.href);
+            url.searchParams.set('category', category);
+            window.location.href = url.toString();
+        });
+    </script>
 </body>
-<script>
-    document.querySelectorAll('.tr-comp').forEach(btn => {
-        btn.addEventListener('click', function () {
-            let id = btn.id
-            window.location.href = `/manage/complaint/${id}/`
-        })
-    })
-
-    document.getElementById('category').addEventListener('change', function() {
-        let category = this.value
-
-        const currentUrl = window.location.href;
-
-        if (currentUrl.includes('?')) {
-            window.location.href = currentUrl.replace(/([?&])category=[^&]*/, `$1category=${category}`);
-        } else {
-            window.location.href = `${currentUrl}?category=${category}`;
-        }
-
-});
-</script>
-
 </html>
