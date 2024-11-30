@@ -1,43 +1,68 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>Запрос #{{ unban_request.id }}</title>
     <link rel="icon" href="{% static 'core/img/favicon.ico' %}" type="image/x-icon">
+    <!-- Подключение Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Метатег для обеспечения адаптивности на мобильных устройствах -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <style>
+        .custom-padding {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+        @media (max-width: 332px) {
+            .unblock-btn {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
 
     {% include 'manage/header.html' %}
-    {% block admin_header %} {% endblock %}
+    {% block admin_header %}{% endblock %}
 
-    <main>
-        <p>Запрос на разблокировку #{{ unban_request.id }}</p>
-    <p>Причина блокировки - {{ unban_request.reason }}</p>
-    <p>Текст запроса - {{ unban_request.request_text }}</p>
-    <hr>
-    <p>Обращение:</p>
-    {% if unban_request.is_anonymous == True %}
-        <p>Анонимное обращение</p>
-    {% else %}
-        <p>{{ unban_request.name }}</p>
-    {% endif %}
-    <p>{{ unban_request.category }}</p>
-    <p>{{ unban_request.text }}</p>
-    <p>Истекает {{ unban_request.ended_at|date:"j E H:i:s" }}</p>
-
-    <form action="{% url 'approve_unban_requests' id=unban_request.id %}" method="post">
-        {% csrf_token %}
-        <input type="submit" value="Разблокировать">
-    </form>
-
-    <form action="{% url 'close_unban_requests' id=unban_request.id %}" method="post">
-        {% csrf_token %}
-        <input type="submit" value="Закрыть запрос">
-    </form>
+    <main class="custom-padding">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Запрос на разблокировку #{{ unban_request.id }}</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Причина блокировки:</strong> {{ unban_request.reason }}</p>
+                <p><strong>Текст запроса:</strong> {{ unban_request.request_text }}</p>
+                <hr>
+                <p><strong>Обращение:</strong></p>
+                {% if unban_request.is_anonymous %}
+                    <p>Анонимное обращение</p>
+                {% else %}
+                    <p>{{ unban_request.name }}</p>
+                {% endif %}
+                <p><strong>Категория:</strong> {{ unban_request.category }}</p>
+                <p><strong>Текст обращения:</strong> {{ unban_request.text }}</p>
+                <p><strong>Дата истечения блокировки:</strong> {{ unban_request.ended_at|date:"j E H:i:s" }}</p>
+            </div>
+            <div class="card-footer text-left">
+                <form action="{% url 'approve_unban_requests' id=unban_request.id %}" method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="unblock-btn btn btn-success">Разблокировать</button>
+                </form>
+                <form action="{% url 'close_unban_requests' id=unban_request.id %}" method="post" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-secondary">Закрыть запрос</button>
+                </form>
+            </div>
+        </div>
     </main>
 
     {% include 'manage/footer.html' %}
-    {% block admin_footer %} {% endblock %}
+    {% block admin_footer %}{% endblock %}
+
+    <!-- Подключение необходимых JavaScript-файлов для работы компонентов Bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -249,7 +249,7 @@ def open_need_review_complaints(request):
 
 @staff_or_superuser_required
 def close_complaints(request):
-    page = 'Закрытые'
+    page = 'Закрытые обращения'
     category = request.GET.get('category')
 
     name = getAdminName(request)

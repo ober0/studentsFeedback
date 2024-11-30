@@ -1,58 +1,88 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>Запросы на снятие блокировки</title>
     <link rel="icon" href="{% static 'core/img/favicon.ico' %}" type="image/x-icon">
+    <!-- Подключение Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Метатег для обеспечения адаптивности на мобильных устройствах -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <style>
+        /* Курсор указателя и изменение фона при наведении на строку таблицы */
+        .unban-request {
+            cursor: pointer;
+        }
+        .unban-request:hover {
+            background-color: #f1f1f1;
+        }
+        /* Добавление боковых отступов по 10 пикселей */
+        .custom-padding {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+        /* Установка фиксированной ширины для столбца "Причина" */
+        .reason-column {
+            max-width: 150px; /* Задайте необходимую ширину */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
 </head>
 <body>
 
 {% include 'manage/header.html' %}
-    {% block admin_header %} {% endblock %}
+{% block admin_header %}{% endblock %}
 
-
-<main>
-    <table>
-        <thead>
-            <tr>
-                <th>№</th>
-                <th>Имя</th>
-                <th>Причина</th>
-                <th>Создана</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for request in requests %}
-            <tr class="unban-request" id="{{ request.id }}">
-                <td>{{ request.id }}</td>
-                <td>
-                    {% if request.is_anonymous == True %}
-                        Анонимно
-                    {% else %}
-                        {{ request.user_name }}
-                    {% endif %}
-                </td>
-                <td>{{ request.block_reason }}</td>
-                <td>{{ request.created_at }}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+<main class="custom-padding">
+    <h3 class="mb-4">Запросы на снятие блокировки</h3>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">№</th>
+                    <th scope="col">Имя</th>
+                    <th scope="col" class="reason-column">Причина</th>
+                    <th scope="col">Создана</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for request in requests %}
+                <tr class="unban-request" data-id="{{ request.id }}">
+                    <td>{{ request.id }}</td>
+                    <td>
+                        {% if request.is_anonymous %}
+                            Анонимно
+                        {% else %}
+                            {{ request.user_name }}
+                        {% endif %}
+                    </td>
+                    <td class="reason-column">{{ request.block_reason }}</td>
+                    <td>{{ request.created_at }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </main>
 
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.unban-request').forEach(btn => {
-            btn.addEventListener('click', function () {
-                window.location.href = `/manage/unban/request/check/${this.id}/`
-            })
-        })
-    })
+        document.querySelectorAll('.unban-request').forEach(row => {
+            row.addEventListener('click', function () {
+                const id = this.getAttribute('data-id');
+                window.location.href = `/manage/unban/request/check/${id}/`;
+            });
+        });
+    });
 </script>
 
 {% include 'manage/footer.html' %}
-    {% block admin_footer %} {% endblock %}
+{% block admin_footer %}{% endblock %}
 
 </body>
 </html>

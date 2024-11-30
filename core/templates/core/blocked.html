@@ -1,38 +1,49 @@
+
 {% load static %}
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'core/css/base.css' %}">
     <title>Доступ ограничен</title>
     <link rel="icon" href="{% static 'core/img/favicon.ico' %}" type="image/x-icon">
+    <!-- Подключение стилей -->
+    <link rel="stylesheet" href="{% static 'core/css/base.css' %}">
 </head>
 <body>
     {% include 'core/header.html' %}
+
     <main style="max-width: 960px !important;" class="container">
-        <h1 class="text-center mb-4" style="font-size: 28px !important">К сожалению, доступ к системе для вас ограничен.</h1>
+        <h1 class="text-center mb-4" style="font-size: 28px !important">
+            К сожалению, доступ к системе для вас ограничен.
+        </h1>
 
         <div id="blocked-complaint"></div>
 
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title text-left">Запрос на разблокировку</h5>
-                <p style="text-align: left" class="card-text">
+                <p class="card-text" style="text-align: left;">
                     Если вы считаете, что блокировка была ошибочной, пожалуйста, заполните форму ниже:
                 </p>
                 <form action="{% url 'unban_request_create' %}" method="post">
                     {% csrf_token %}
-                    
-                    <placeholder type="hidden" name="complaint_id" id="complaint_id">
-                    <div id="form-block" style="text-align: left !important" class="mb-3"></div>
+                    <input type="hidden" name="complaint_id" id="complaint_id">
+                    <div id="form-block" class="mb-3" style="text-align: left !important;"></div>
                 </form>
             </div>
         </div>
     </main>
+
     {% include 'core/footer.html' %}
+
+    <!-- Подключение скриптов -->
     <script src="https://cdn.jsdelivr.net/npm/@fingerprintjs/fingerprintjs@3/dist/fp.min.js"></script>
-    <script src="{% static '/core/js/getBlockComplaint.js' %}"></script>
+    <script src="{% static 'core/js/getBlockComplaint.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>
