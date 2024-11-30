@@ -3,52 +3,114 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Обращение #{{ complaint.id }}</title>
+    <link rel="stylesheet" href="{% static 'core/css/index.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/base.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
     <link rel="icon" href="{% static 'core/img/favicon.ico' %}" type="image/x-icon">
 </head>
 <body>
-{% include 'manage/header.html' %}
-    {% block admin_header %} {% endblock %}
+    {% include 'manage/header.html' %}
+    {% block admin_header %}{% endblock %}
 
-<main>
-    <input type="hidden" id="id" value="{{ complaint.id }}">
-{{ complaint.category }}
-    {{ complaint.content }}
+<main class="container mt-4">
+    <div class="card">
+        <div class="card-body">
+            <input type="hidden" id="id" value="{{ complaint.id }}">
 
-    {% if complaint.is_anonymous == False %}
-        {{ complaint.user_name }}
-        {{ complaint.user_group }}
-    {% else %}
-        Анонимно
-    {% endif %}
 
-    {{ complaint.created_at }}
+            <h5 class="card-title">
+                {% if complaint.is_anonymous %}
+                    Анонимное обращение
+                {% else %}
+                    {{ complaint.user_name }}
+                {% endif %}
+            </h5>
+            <h6 class="card-subtitle mb-2 text-muted">
+                Категория: {{ complaint.category }}
+            </h6>
+            <p class="card-text">
+                Текст обращения: {{ complaint.content }}
+            </p>
+            <p class="text-muted">
+                Дата создания: {{ complaint.created_at }}
+            </p>
+            <hr>
+            <!-- Форма ответа администратора -->
+            <form action="/complaints/update/response/add/{{ complaint.id }}/" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="response">Ответ администратора</label>
+                    <textarea class="form-control" name="response_text" id="response" rows="3" placeholder="Ответ администратора"></textarea>
+                </div>
+                {% if complaint.is_public %}
+                    <div class="form-check mb-3">
+                        <input type="checkbox" class="form-check-input" name="is_published" id="published">
+                        <label class="form-check-label" for="published">Опубликовать</label>
+                    </div>
+                {% endif %}
+                <button type="submit" class="btn btn-primary btn-block">Отправить ответ</button>
+            </form>
 
-<form action="/complaints/update/response/add/{{ complaint.id }}/" method="post">
-    {% csrf_token %}
-    <textarea name="response_text" id="response" placeholder="Ответ"></textarea>
-    {% if complaint.is_public %}
-    <input type="checkbox" name="is_published" id="published">
-    {% endif %}
-    <input type="submit" value="Отправить ответ">
-</form>
-
-<input type="text" name="reason" id="reason" placeholder="Причина блокирровки">
-<select name="time" id="time">
-    <option value="forever">Навсегда</option>
-    <option value="1">Час</option>
-    <option value="24">День</option>
-    <option value="168">Неделя</option>
-    <option value="720">Месяц</option>
-</select>
-<input id="block_user" type="button" value="Заблокировать пользователя">
-<input id="remove_complaint" type="button" value="Удалить обращение">
+            <!-- Удаление и блокировка -->
+            <hr>
+            <div class="buttons d-flex justify-content-between">
+                <button id="blockuser" class="btn btn-outline-warning btn-block" data-toggle="modal" data-target="#blockModal">
+                    Заблокировать пользователя
+                </button>
+                <button id="remove_complaint" class="btn btn-outline-danger btn-block">
+                    Удалить обращение
+                </button>
+            </div>
+        </div>
+    </div>
 </main>
 
+<!-- Модальное окно для блокировки -->
+<div class="modal fade" id="blockModal" tabindex="-1" role="dialog" aria-labelledby="blockModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="blockModalLabel">Подтверждение блокировки</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="reason">Причина блокировки</label>
+                        <textarea class="form-control" id="reason" name="reason" rows="3" placeholder="Введите причину"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="time">Срок блокировки</label>
+                        <select class="form-control" id="time" name="time">
+                            <option value="1">1 час</option>
+                            <option value="24">1 день</option>
+                            <option value="168">1 неделя</option>
+                            <option value="720">1 месяц</option>
+                            <option value="forever">Навсегда</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                    <button id="block_user" type="button" class="btn btn-warning">Заблокировать</button>
+                </div>
+
+        </div>
+    </div>
+</div>
+
 {% include 'manage/footer.html' %}
-    {% block admin_footer %} {% endblock %}
+{% block admin_footer %}{% endblock %}
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
 <script src="{% static 'manage/js/ban_user.js' %}"></script>
 <script src="{% static 'manage/js/delete_complaint.js' %}"></script>
 </body>
-
 </html>
