@@ -37,6 +37,12 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(response => response.json())
             .then(result => {
                 if (result.success) {
+                    if (result.complaints_count === 0){
+                        let noComplaintHTML = `
+                        <p>Обращений пока нет :(</p>
+                        `
+                        document.querySelector('.complaints').insertAdjacentHTML('beforeend', noComplaintHTML);
+                    }
                     result.complaints.forEach((complaint) => {
                         const complaintHTML = createComplaint(complaint);
                         document.querySelector('.complaints').insertAdjacentHTML('beforeend', complaintHTML);
