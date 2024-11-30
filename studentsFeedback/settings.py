@@ -155,7 +155,7 @@ LOGIN_URL = '/admin/login/'
 LOGOUT_REDIRECT_URL = '/'
 
 #лимит на загрузку обращение за 1 запрос
-COMPLAINTS_LIST_SIZE = 2
+COMPLAINTS_LIST_SIZE = 15
 
 #Максимальное количество обращений за 5 минут -> далее спам
 MAX_COMPLAINTS_COUNT = 3

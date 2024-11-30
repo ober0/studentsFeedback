@@ -18,6 +18,13 @@ function repost(src) {
     }
 }
 
+function resultCopy(status, btn){
+    if (status){
+        btn.innerText = 'Скопировано!';
+        btn.disabled = true;
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     let isShareMenuOpened = false;
 
@@ -28,11 +35,12 @@ document.addEventListener('DOMContentLoaded', () => {
             let link = btn.getAttribute('link');
 
             if (btn.id === 'copy') {
-                console.log(1);
+                link = btn.getAttribute('data-url');
+                console.log(link)
                 if (navigator.clipboard) {
                     navigator.clipboard.writeText(link)
-                        .then(() => resultCopy(true))
-                        .catch(err => resultCopy(false));
+                        .then(() => resultCopy(true, btn))
+                        .catch(err => resultCopy(false, btn));
                 } else {
                     const tempInput = document.createElement('input');
                     tempInput.value = link;
@@ -40,15 +48,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     tempInput.select();
                     try {
                         document.execCommand('copy');
-                        resultCopy(true);
+                        resultCopy(true, btn);
                     } catch (err) {
-                        resultCopy(false);
+                        resultCopy(false, btn);
                     }
                     document.body.removeChild(tempInput);
                 }
 
-                btn.innerText = 'Скопировано!';
-                btn.disabled = true;
+
             } else {
                 repost(link);
                 isShareMenuOpened = true;
