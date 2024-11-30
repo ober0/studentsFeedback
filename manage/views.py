@@ -1,6 +1,7 @@
 from datetime import timedelta
 from functools import wraps
 
+import requests
 from django.utils.http import urlencode
 
 from complaints.task import unbanUser
@@ -145,11 +146,36 @@ def unban_request_create(request):
         complaint_id = data.get('complaint_id')
         fingerprint = data.get('device_identifier')
 
+
+
+
         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
         if x_forwarded_for:
             ip = x_forwarded_for.split(',')[0]
         else:
             ip = request.META.get('REMOTE_ADDR')
+
+
+        moderation_request = requests.post(settings.MODERATION_REQUEST_URL, data={
+            'text': str(request_text),
+        })
+        if moderation_request.status_code != 200:
+            messages.error(request, 'Moderation request failed')
+            return redirect(f'/blocked/')
+
+        response = moderation_request.json()
+        level = response.get('level')
+
+        if level == 1:
+            messages.error(request, 'Не используйте нецензурную лексику!')
+            return redirect(f'/blocked/')
+        if level == 2:
+            messages.error(request, 'Нецензурная лексика запрещена, блокировка продлена.')
+            blocked_user = BlockedUser.objects.filter(Q(device_identifier=fingerprint) | Q(ip_address=ip)).first()
+            blocked_user.ended_at = None
+            blocked_user.save()
+            return redirect(f'/blocked/')
+
 
         complaint = Complaint.objects.filter(id=complaint_id).first()
 
