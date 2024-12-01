@@ -155,10 +155,10 @@ LOGIN_URL = '/admin/login/'
 LOGOUT_REDIRECT_URL = '/'
 
 #лимит на загрузку обращение за 1 запрос
-COMPLAINTS_LIST_SIZE = 15
+COMPLAINTS_LIST_SIZE = 2
 
 #Максимальное количество обращений за 5 минут -> далее спам
-MAX_COMPLAINTS_COUNT = 3121
+MAX_COMPLAINTS_COUNT = 3
 
 #Время блокировки за спам (в минутах)
 BAN_FOR_SPAM_TIME = 60

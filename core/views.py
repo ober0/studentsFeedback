@@ -2,8 +2,7 @@ import random
 import secrets
 import re
 from django.db.models import Q
-from django.db.models import Count, Subquery, OuterRef, Exists
-from django.db.models.functions import Lower
+from django.db.models import Count, OuterRef, Exists
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages

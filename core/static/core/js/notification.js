@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
             toast.classList.add("closing");
             setTimeout(() => {
                 toast.remove();
-            }, 500);и
+            }, 500);
         }, 5000);
 
         // Закрытие по нажатию на кнопку
