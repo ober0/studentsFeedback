@@ -30,6 +30,7 @@
     {% block header %} {% endblock %}
 
 <main>
+    {% include 'core/notification.html' %}
     {% csrf_token %}
     <div class="container">
       <h1 class="mb-4 text-center" id="text-28">Мои обращения</h1>

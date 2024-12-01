@@ -29,7 +29,8 @@
     {% block header %} {% endblock %}
 
 <main>
-
+    
+    {% include 'core/notification.html' %}
 
     {% csrf_token %}
     <div class="container">

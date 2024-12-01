@@ -19,6 +19,11 @@ from django.contrib import messages
 
 
 def getAdminName(request):
+    """
+        Получает имя администратора для отображения в интерфейсе.
+        Если имя или фамилия отсутствуют, возвращает 'admin'.
+    """
+
     first_name = request.user.first_name
     if first_name is not None or first_name == '':
         return 'admin'
@@ -31,6 +36,11 @@ def getAdminName(request):
 
 
 def staff_or_superuser_required(view_func):
+    """
+        Декоратор для проверки, что пользователь является либо staff, либо superuser.
+        Если пользователь не аутентифицирован, перенаправляет на страницу входа с сохранением пути.
+        Если пользователь не имеет прав, перенаправляет на главную страницу.
+    """
     @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
         if request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser):
@@ -48,6 +58,11 @@ def staff_or_superuser_required(view_func):
 
 @csrf_exempt
 def check_fingerprint(request):
+    """
+        Проверяет, заблокирован ли пользователь по IP-адресу или устройству (fingerprint).
+        Если старый fingerprint изменился, обновляет его в базе.
+    """
+
     if request.method == 'POST':
         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
         if x_forwarded_for:
@@ -96,6 +111,11 @@ def check_fingerprint(request):
 
 
 def load_banned_complaint(request):
+    """
+        Загружает информацию о заблокированной жалобе для текущего пользователя.
+        Если блокировка истекла, удаляет запись и перенаправляет пользователя.
+    """
+
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
         ip = x_forwarded_for.split(',')[0]
@@ -139,6 +159,11 @@ def load_banned_complaint(request):
 
 
 def unban_request_create(request):
+    """
+       Создает заявку на разблокировку пользователя.
+       Выполняет проверку текста заявки через сервис модерации.
+   """
+
     if request.method == 'POST':
         data = request.POST
 
@@ -193,6 +218,11 @@ def unban_request_create(request):
 
 @staff_or_superuser_required
 def open_complaints(request):
+    """
+        Отображает список открытых жалоб для администраторов.
+        Фильтрует по категории, если указана.
+    """
+
     page = 'Открытые обращения'
     category = request.GET.get('category')
 
@@ -221,6 +251,10 @@ def open_complaints(request):
 
 @staff_or_superuser_required
 def open_need_review_complaints(request):
+    """
+        Отображает список жалоб, которые требуют модерации.
+    """
+
     page = 'Спам'
     category = request.GET.get('category')
 
@@ -249,6 +283,10 @@ def open_need_review_complaints(request):
 
 @staff_or_superuser_required
 def close_complaints(request):
+    """
+        Отображает список закрытых жалоб.
+    """
+
     page = 'Закрытые обращения'
     category = request.GET.get('category')
 
@@ -277,6 +315,11 @@ def close_complaints(request):
 
 @staff_or_superuser_required
 def complaint(request, id):
+    """
+        Отображает информацию о конкретной жалобе.
+        Разные шаблоны используются для открытых и закрытых жалоб.
+    """
+
     complaint = Complaint.objects.get(id=id)
 
     name = getAdminName(request)
@@ -290,8 +333,15 @@ def complaint(request, id):
         return render(request, 'manage/complaint_open.html', context)
     else:
         return render(request, 'manage/complaint_close.html', context)
+
+
 @staff_or_superuser_required
 def ban(request, id):
+    """
+        Блокирует пользователя, связанного с указанной жалобой.
+        Может задать срок блокировки или оставить её бессрочной.
+    """
+
     if request.method == 'POST':
         reason = request.POST.get('reason')
         time = request.POST.get('time')
@@ -332,15 +382,21 @@ def ban(request, id):
             messages.error(request, f'Ошибка! {str(e)}')
             return JsonResponse({'success': False})
 
+
 @staff_or_superuser_required
 def index(request):
+    """
+        Перенаправляет на список открытых жалоб.
+    """
+
     return redirect('open_complaints')
-
-
 
 
 @staff_or_superuser_required
 def unban_requests_check(request):
+    """
+        Отображает список заявок на разблокировку, которые находятся в обработке.
+    """
 
     blocked_reason_subquery = BlockedUser.objects.filter(
         complaints_spam_id=OuterRef('complaint')
@@ -364,6 +420,10 @@ def unban_requests_check(request):
 
 
 def unban_request_check(request, id):
+    """
+        Отображает подробности конкретной заявки на разблокировку.
+    """
+
     unban_request = UserUnbanRequest.objects.filter(id=id).annotate(
         name=F('complaint__user_name'),
         is_anonymous=F('complaint__is_anonymous'),
@@ -391,6 +451,10 @@ def unban_request_check(request, id):
 
 
 def unban_requests_close(request, id):
+    """
+        Отклоняет заявку на разблокировку.
+    """
+
     user_unban_request = get_object_or_404(UserUnbanRequest, id=id)
     try:
         user_unban_request.review_result = 'rejected'
@@ -404,6 +468,10 @@ def unban_requests_close(request, id):
 
 
 def unban_requests_approve(request, id):
+    """
+       Одобряет заявку на разблокировку и удаляет запись о блокировке.
+   """
+
     user_unban_request = get_object_or_404(UserUnbanRequest, id=id)
 
     blocked_user = BlockedUser.objects.filter(complaints_spam_id=user_unban_request.complaint).first()

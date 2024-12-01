@@ -17,196 +17,174 @@ from core.task import send_email
 
 
 def staff_or_superuser_required(view_func):
+    """
+    Декоратор для проверки, является ли пользователь staff или superuser.
+    Если пользователь не аутентифицирован или не имеет необходимых прав, перенаправляет на страницу авторизации.
+    """
     @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
         if request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser):
             return view_func(request, *args, **kwargs)
         else:
-            return redirect(settings.LOGIN_URL) 
+            return redirect(settings.LOGIN_URL)
     return _wrapped_view
 
 
 def create(request):
+    """
+    Создает новую жалобу. Проверяет блокировки по IP и fingerprint, проводит модерацию текста,
+    а также применяет ограничения на создание жалоб за короткий период (антиспам).
+    В случае нарушения пользователь блокируется.
+    """
     if request.method == 'POST':
         data = request.POST
 
+        # Получение IP-адреса
         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-        if x_forwarded_for:
-            ip = x_forwarded_for.split(',')[0]
-        else:
-            ip = request.META.get('REMOTE_ADDR')
+        ip = x_forwarded_for.split(',')[0] if x_forwarded_for else request.META.get('REMOTE_ADDR')
+
         pskey = data.get('pskey')
 
-        if not pskey:
-            messages.error(request, 'Внутренняя ошибка. Перезагрузите страницу')
-            return redirect('/')
-
+        # Проверка на блокировки
         isBlocked_ip = BlockedUser.objects.filter(ip_address=ip).exists()
         isBlockedFingerprint = BlockedUser.objects.filter(device_identifier=pskey).exists()
-
         if isBlocked_ip or isBlockedFingerprint:
             return redirect('/blocked/')
 
-
-
+        # Проверка на частоту создания жалоб
         time_interval_5 = timezone.now() - timezone.timedelta(minutes=5)
+        recent_complaints = Complaint.objects.filter(
+            Q(ip_address=ip) | Q(device_identifier=pskey)
+        ).filter(created_at__gte=time_interval_5)
 
-        recent_complaints = Complaint.objects.filter(Q(ip_address=ip) | Q(device_identifier=pskey)).filter(created_at__gte=time_interval_5).order_by('-created_at')
         if len(recent_complaints) >= settings.MAX_COMPLAINTS_COUNT:
-            messages.error(request, f'Ваши действия похожи на автоматические, вы заблокированы на {settings.BAN_FOR_SPAM_TIME} мин')
-
+            messages.error(request, f'Ваши действия похожи на автоматические, вы заблокированы на {settings.BAN_FOR_SPAM_TIME} мин.')
             block_end_time = timezone.now() + timedelta(minutes=settings.BAN_FOR_SPAM_TIME)
-
-            block_user = BlockedUser.objects.create(ip_address=ip, device_identifier=pskey,
-                                                    block_reason='Подозрение на спам',
-                                                    ended_at=block_end_time,
-                                                    complaints_spam_id=recent_complaints[0])
+            block_user = BlockedUser.objects.create(
+                ip_address=ip,
+                device_identifier=pskey,
+                block_reason='Подозрение на спам',
+                ended_at=block_end_time,
+                complaints_spam_id=recent_complaints[0]
+            )
             block_user.save()
-
             for complaint in recent_complaints:
                 complaint.is_spam = True
                 complaint.save()
-
-            if block_end_time:
-                unbanUser.apply_async(
-                    kwargs={'id': block_user.id},
-                    eta=block_end_time
-                )
-
+            unbanUser.apply_async(kwargs={'id': block_user.id}, eta=block_end_time)
             return redirect('/blocked/')
 
-
+        # Обработка данных жалобы
         category = data.get("category")
-
-        anonymous = True if data.get('anonymous') else False
-        print(anonymous)
-        if anonymous:
-            name = None
-            group = None
-        else:
-            name = data.get("name")
-            group = data.get("group")
-
-
+        anonymous = bool(data.get('anonymous'))
+        name = None if anonymous else data.get("name")
+        group = None if anonymous else data.get("group")
         content = data['text']
-
         response_method = data['response-method']
-        if response_method == 'email':
-            email = data['email']
-        else:
-            email = None
-
+        email = data['email'] if response_method == 'email' else None
         link = request.POST.get('link')
+        publish = bool(data.get('publish'))
 
-        publish = True if data.get('publish') else False
-
-        moderation_request = requests.post(settings.MODERATION_REQUEST_URL, data={
-            'text': str(content)
-        })
+        # Отправка текста жалобы на модерацию
+        moderation_request = requests.post(settings.MODERATION_REQUEST_URL, data={'text': str(content)})
         if moderation_request.status_code != 200:
             messages.error(request, 'Moderation request failed')
-            return redirect(f'/complaints/create/')
+            return redirect('/complaints/create/')
 
+        # Определение уровня модерации
         response = moderation_request.json()
         level = response.get('level')
-        is_spam = False
-        needs_review = False
+        is_spam = level == 2
+        needs_review = level == 1
 
-        if level == 1:
-            is_spam = False
-            needs_review = True
-        elif level == 2:
-            is_spam = True
-            needs_review = False
-
-
-
-        user_id = request.session.get('student_id')
-
+        # Создание жалобы
         try:
+            user_id = request.session.get('student_id')
             user = Students.objects.filter(id=int(user_id)).first()
-        except:
-            user = None
-
-        try:
-            complaint = Complaint.objects.create(user=user,
-                                                 content=content,
-                                                 category=category,
-                                                 user_name=name,
-                                                 user_group=group,
-                                                 is_anonymous=anonymous,
-                                                 email_for_reply=email,
-                                                 reply_code=link,
-                                                 is_public=publish,
-                                                 is_spam=is_spam,
-                                                 needs_review=needs_review,
-                                                 ip_address=ip,
-                                                 device_identifier=pskey
-                                                 )
+            complaint = Complaint.objects.create(
+                user=user,
+                content=content,
+                category=category,
+                user_name=name,
+                user_group=group,
+                is_anonymous=anonymous,
+                email_for_reply=email,
+                reply_code=link,
+                is_public=publish,
+                is_spam=is_spam,
+                needs_review=needs_review,
+                ip_address=ip,
+                device_identifier=pskey
+            )
             complaint.save()
 
+            # Блокировка пользователя за мат
             if level == 2:
-                try:
-                    if settings.BAN_MATS_TIME != 'forever':
-                        block_end_time = timezone.now() + timedelta(hours=settings.BAN_MATS_TIME)
-                    else:
-                        block_end_time = None
-                    block_user = BlockedUser.objects.create(ip_address=ip, device_identifier=pskey,
-                                                            block_reason='Автоматическая блокировка',
-                                                            complaints_spam_id=complaint,
-                                                            ended_at=block_end_time)
-                    block_user.save()
-                    return redirect('/blocked/')
-                except Exception as e:
-                    print(str(e))
-
+                block_end_time = timezone.now() + timedelta(hours=settings.BAN_MATS_TIME) if settings.BAN_MATS_TIME != 'forever' else None
+                block_user = BlockedUser.objects.create(
+                    ip_address=ip,
+                    device_identifier=pskey,
+                    block_reason='Автоматическая блокировка',
+                    complaints_spam_id=complaint,
+                    ended_at=block_end_time
+                )
+                block_user.save()
+                return redirect('/blocked/')
         except Exception as e:
             messages.error(request, str(e))
-            return redirect(f'/complaints/create/')
+            return redirect('/complaints/create/')
 
         messages.success(request, 'Обращение создано')
         return redirect('/')
 
+
 @staff_or_superuser_required
 def delete(request, id):
+    """
+    Удаляет жалобу по указанному ID. Только для staff или superuser.
+    """
     if request.method == 'POST':
         try:
             complain = Complaint.objects.filter(id=id).first()
             complain.delete()
+            messages.success(request, 'Обращение удалено')
             return JsonResponse({'success': True})
         except:
             messages.error(request, 'Ошибка при удалении записи.')
             return JsonResponse({'success': False})
 
+
 @staff_or_superuser_required
 def add_response(request, id):
+    """
+    Добавляет ответ на жалобу, меняет её статус на закрытую и отправляет уведомление пользователю (если указан email).
+    """
     if request.method == 'POST':
-        is_published = request.POST.get('is_published')
+        is_published = request.POST.get('is_published') == 'on'
         response_text = request.POST.get('response_text')
-        print(is_published)
         try:
             complaint = Complaint.objects.get(id=id)
             complaint.status = 'closed'
             complaint.needs_review = False
-            complaint.is_published = (is_published == 'on')
+            complaint.is_published = is_published
             complaint.response_text = response_text
             complaint.admin = request.user
             complaint.save()
 
-            if complaint.email_for_reply is not None:
-
+            if complaint.email_for_reply:
                 header = f'Ответ на обращение #{complaint.id} на сайте ks54'
-                text = f'''Ответ администратора:
-{response_text}
-Посмотреть обращения можно на {settings.VIEW_COMPLAINTS_URL}
-                '''
+                text = f'Ответ администратора:\n{response_text}\nПосмотреть обращения можно на {settings.VIEW_COMPLAINTS_URL}'
                 send_email.delay(email=complaint.email_for_reply, text=text, header=header)
         except:
             messages.error(request, 'Ошибка.')
         messages.success(request, 'Ответ отправлен')
         return redirect('/manage/complaint/open/')
 
+
 def like(request):
+    """
+    Ставит лайк на жалобу от имени текущего пользователя.
+    """
     if request.method == 'POST':
         student_id = request.session.get('student_id')
         if student_id:
@@ -216,16 +194,17 @@ def like(request):
                 student = Students.objects.get(id=student_id)
                 like = ComplaintLike.objects.create(complaint=complaint, user=student)
                 like.save()
-
                 return JsonResponse({'success': True})
             except Exception as e:
-                messages.error(request, str(e))
                 return JsonResponse({'success': False, 'error': str(e)})
-
         else:
             return JsonResponse({'success': False, 'error': 'NotAuth'})
 
+
 def unlike(request):
+    """
+    Убирает лайк с жалобы от имени текущего пользователя.
+    """
     if request.method == 'POST':
         student_id = request.session.get('student_id')
         if student_id:
@@ -237,13 +216,15 @@ def unlike(request):
                 like.delete()
                 return JsonResponse({'success': True})
             except Exception as e:
-                messages.error(request, str(e))
                 return JsonResponse({'success': False, 'error': str(e)})
         else:
             return JsonResponse({'success': False, 'error': 'NotAuth'})
 
 
 def complaint(request, key):
+    """
+    Отображает конкретную жалобу по её уникальному коду ответа.
+    """
     complaint = Complaint.objects.filter(reply_code=key).first()
     if complaint:
         context = {'complaint': complaint}
@@ -253,6 +234,9 @@ def complaint(request, key):
 
 @staff_or_superuser_required
 def delete_public(request, id):
+    """
+    Снимает публикацию с жалобы (делает её приватной).
+    """
     if request.method == 'POST':
         try:
             complaint = Complaint.objects.filter(id=id).first()
@@ -260,5 +244,4 @@ def delete_public(request, id):
             complaint.save()
             return JsonResponse({'success': True})
         except:
-            messages.error(request, 'Ошибка при удалении записи со стены.')
             return JsonResponse({'success': False})

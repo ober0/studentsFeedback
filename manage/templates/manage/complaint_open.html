@@ -23,7 +23,7 @@
     {% block admin_header %}{% endblock %}
 
 <main class="custom-padding">
-
+    {% include 'core/notification.html' %}
     <div class="card">
     <div class="card-header">
                 <h5 class="card-title" style="margin-bottom: 0">Обращение #{{ complaint.id }}</h5>

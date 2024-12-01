@@ -13,9 +13,11 @@
     <link rel="stylesheet" href="{% static 'core/css/base.css' %}">
 </head>
 <body>
+
     {% include 'core/header.html' %}
 
     <main style="max-width: 960px !important;" class="container">
+        {% include 'core/notification.html' %}
         <h1 class="text-center mb-4" style="font-size: 28px !important">
             К сожалению, доступ к системе для вас ограничен.
         </h1>

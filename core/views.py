@@ -17,6 +17,11 @@ from babel.dates import format_datetime
 
 
 def student_required(redirect_url):
+    """
+        Декоратор для проверки, авторизован ли студент.
+        Если пользователь не авторизован, перенаправляет на страницу авторизации с сохранением текущего пути.
+    """
+
     def decorator(view_func):
         def wrapper(request, *args, **kwargs):
             if 'email' not in request.session or request.session.get('email') == None:
@@ -26,9 +31,13 @@ def student_required(redirect_url):
     return decorator
 
 
-# messages.success(request, 'Вы успешно вошли!')
 
 def index(request):
+    """
+        Отображает главную страницу. Учитывает текущие параметры фильтрации и поиска.
+        Передает данные авторизации и текущего пользователя в контекст.
+    """
+
     # likes or time
     sort = request.GET.get('filter')
     if sort == 'time':
@@ -60,12 +69,21 @@ def index(request):
 
 
 def exit(request):
+    """
+        Завершает сессию пользователя, удаляя данные из request.session.
+        Перенаправляет на главную страницу.
+    """
+
     request.session['student_id'] = None
     request.session['email'] = None
     return redirect('index')
 
 
 def auth(request):
+    """
+        Отображает страницу авторизации. Сохраняет путь для перенаправления после авторизации.
+    """
+
     if request.method == 'GET':
         next = request.GET.get('next')
         if not next:
@@ -74,6 +92,11 @@ def auth(request):
 
 
 def send_code(request):
+    """
+        Генерирует код подтверждения для входа и отправляет его на указанный email.
+        Код сохраняется в Redis с временем жизни 5 минут.
+    """
+
     if request.method == 'POST':
         code = random.randint(100000, 999999)
         next = request.POST.get('next')
@@ -87,6 +110,11 @@ def send_code(request):
         return render(request, 'core/enter_code.html', {'email': email, 'next': next})
 
 def check_code(request):
+    """
+        Проверяет код подтверждения, введенный пользователем.
+        Если код верен, создает пользователя (если он не существует) и сохраняет его данные в сессии.
+    """
+
     if request.method == 'POST':
         next = request.POST.get('next')
 
@@ -114,6 +142,10 @@ def check_code(request):
 
 
 def create_complaint(request):
+    """
+        Отображает страницу для создания жалобы. Генерирует уникальную ссылку для жалобы.
+    """
+
     user_id = request.session.get('student_id')
     user = Students.objects.filter(id=user_id).first()
     link = secrets.token_hex(32)
@@ -128,6 +160,10 @@ def create_complaint(request):
 
 
 def blocked(request):
+    """
+       Отображает страницу с информацией о блокировке пользователя.
+   """
+
     student_id = request.session.get('student_id')
     email = request.session.get('email')
     context = {
@@ -140,6 +176,10 @@ def blocked(request):
     
 @student_required('/complaints/my/')
 def my_complaints(request):
+    """
+        Отображает страницу с жалобами текущего пользователя.
+    """
+
     student_id = request.session.get('student_id')
     student = Students.objects.filter(id=int(student_id)).first()
 
@@ -151,6 +191,11 @@ def my_complaints(request):
     return render(request, 'core/my_complaints.html', context)
 
 def loadmore(request):
+    """
+        Загружает дополнительный список жалоб с учетом фильтров поиска и сортировки.
+        Возвращает результат в формате JSON.
+    """
+
     if request.method == 'POST':
 
         start = int(request.POST.get('start', 0))
@@ -159,7 +204,6 @@ def loadmore(request):
 
 
         sort = request.GET.get('filter', 'time')
-        print(sort)
         if sort == 'time':
             sort_query = '-created_at'
         elif sort == 'likes':
@@ -167,12 +211,8 @@ def loadmore(request):
         else:
             sort_query = '-created_at'
 
-        print(sort_query)
-
         search_query = request.GET.get('search', '')
         escaped_search_query = re.escape(search_query)
-
-        print(escaped_search_query)
 
         try:
             # Подзапрос для проверки лайков текущего пользователя
@@ -225,6 +265,12 @@ def loadmore(request):
 
 
 def loadmore_my(request):
+    """
+        Загружает дополнительный список жалоб, принадлежащих текущему пользователю, с учетом поиска.
+        Объединяет результаты из разных источников (IP, email, user_id и т.д.).
+        Возвращает результат в формате JSON.
+    """
+
     if request.method == 'POST':
         try:
             start = int(request.POST.get('start', 0))

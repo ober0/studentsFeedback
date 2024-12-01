@@ -10,10 +10,13 @@
     <link rel="icon" href="{% static 'core/img/favicon.ico' %}" type="image/x-icon">
 </head>
 <body>
+
     {% include 'core/header.html' %}
     {% block header %} {% endblock %}
 
     <main>
+        {% include 'core/notification.html' %}
+        
         <div class="container form-div">
             <h1 style="font-size: 28px !important" class="mb-4 text-center">Создать обращение</h1>
             <form id="feedback-form" action="{% url 'create' %}" method="POST" class="mt-4">
