@@ -159,6 +159,7 @@ def loadmore(request):
 
 
         sort = request.GET.get('filter', 'time')
+        print(sort)
         if sort == 'time':
             sort_query = '-created_at'
         elif sort == 'likes':
@@ -166,9 +167,12 @@ def loadmore(request):
         else:
             sort_query = '-created_at'
 
+        print(sort_query)
 
         search_query = request.GET.get('search', '')
         escaped_search_query = re.escape(search_query)
+
+        print(escaped_search_query)
 
         try:
             # Подзапрос для проверки лайков текущего пользователя

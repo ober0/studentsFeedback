@@ -15,8 +15,10 @@ document.addEventListener('DOMContentLoaded', function () {
         // Получаем CSRF токен
         const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
 
+        let getAttr = window.location.href.split('?')[1]
+
         // Выполняем POST-запрос
-        fetch(`loadmore/`, {
+        fetch(`loadmore/?${getAttr}`, {
             method: 'POST',
             headers: {
                 'X-CSRFToken': csrfToken
