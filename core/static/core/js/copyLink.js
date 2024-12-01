@@ -15,7 +15,7 @@ function resultCopy(result){
 }
 
 document.getElementById('copy-link-btn').addEventListener('click', function() {
-    const linkText = document.getElementById('link-display').value;
+    const linkText = document.getElementById('link-url').value;
     if (navigator.clipboard) {
         navigator.clipboard.writeText(linkText)
             .then(() => {

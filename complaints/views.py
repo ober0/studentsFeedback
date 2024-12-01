@@ -243,5 +243,5 @@ def delete_public(request, id):
             complaint.is_published = False
             complaint.save()
             return JsonResponse({'success': True})
-        except:
+        except Exception as e:
             return JsonResponse({'success': False})
