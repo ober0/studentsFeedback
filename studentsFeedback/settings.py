@@ -24,7 +24,7 @@ SECRET_KEY = 'django-insecure-qq)u5ot8do$*((dtqfy0fmpe37m)0$ax#g!o5xda$95x(l=9v&
 ENCRYPTION_KEY = 'HPfw6Tsve7-d9j9zAyirgHRGC1sATzBVMneYgf_9I3I='
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -152,10 +152,11 @@ COMPLAINTS_VIEW_URL = f'{URL}/complaints/'
 VIEW_COMPLAINTS_URL = f'{URL}/complaints/my/'
 
 LOGIN_URL = '/admin/login/'
+
 LOGOUT_REDIRECT_URL = '/'
 
 #лимит на загрузку обращение за 1 запрос
-COMPLAINTS_LIST_SIZE = 2
+COMPLAINTS_LIST_SIZE = 15
 
 #Максимальное количество обращений за 5 минут -> далее спам
 MAX_COMPLAINTS_COUNT = 3
