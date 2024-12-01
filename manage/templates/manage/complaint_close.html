@@ -8,12 +8,18 @@
     <link rel="icon" href="{% static 'core/img/favicon.ico' %}" type="image/x-icon">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static 'core/css/base.css' %}">
+    <style>
+        .custom-padding {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+    </style>
 </head>
 <body>
     {% include 'manage/header.html' %}
     {% block admin_header %}{% endblock %}
 
-    <main class="">
+    <main class="custom-padding">
 
         <div class="card">
             <div class="card-header">

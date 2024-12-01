@@ -11,12 +11,18 @@
     <link rel="stylesheet" href="{% static 'core/css/base.css' %}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">
     <link rel="icon" href="{% static 'core/img/favicon.ico' %}" type="image/x-icon">
+    <style>
+        .custom-padding {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+    </style>
 </head>
 <body>
     {% include 'manage/header.html' %}
     {% block admin_header %}{% endblock %}
 
-<main class="">
+<main class="custom-padding">
 
     <div class="card">
     <div class="card-header">
