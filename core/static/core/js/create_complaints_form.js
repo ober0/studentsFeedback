@@ -1,1 +1,117 @@
-eval(function(p,a,c,k,e,r){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36))};if(!''.replace(/^/,String)){while(c--)r[e(c)]=k[c]||e(c);k=[function(e){return r[e]}];e=function(){return'\\w+'};c=1};while(c--)if(k[c])p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c]);return p}('3.l(\'16\',g(){3.4(\'D\').l(\'E\',g(){7 k=3.F(\'.p-G\');6(17.q){k.h.r(\'i\');k.H=s}t{k.h.u(\'i\');k.H=I}});3.J(\'K[p="v-L"]\').M(g(a){a.l(\'E\',g(){7 d=3.4(\'j-m\');7 n=3.F(\'.N\');6(!d||!n){18.8("19 m 1a N c 1b 1c 1d.");1e}6(3.4(\'v-j\').q){d.h.u(\'i\');n.h.r(\'i\');3.4(\'j\').O=s}t{d.h.r(\'i\');n.h.u(\'i\');3.4(\'j\').O=I}})});g e(a,b){6(1f){a.P.Q=\'\'}t{a.P.Q=\'1g\'}}3.4(\'R-1h\').l(\'1i\',1j g(){5 8=0;7 f=3.4(\'o-f\');7 S=T 1k.1l();7 U=T S.1m();7 w=U.w;3.4(\'1n\').c=w;3.J(\'#o-f K, #o-f 1o, #o-f 1p\').M(m=>{e(m,s)});5 x=3.4(\'1q\');5 V=x.c;5 y=3.4(\'p\');5 W=y.c;5 z=3.4(\'G\');5 X=z.c;5 Y=3.4(\'D\').q;5 A=3.4(\'1r\');5 11=A.c;7 12=/^[a-B-13-9.1s%+-]+@[a-B-13-9.-]+\\.[a-B-Z]{2,}$/;5 d=3.4(\'j\');5 14=d.c;5 15=f.1t[\'v-L\'].c;6(!V){e(x);8++}6(!Y){6(W.C<1){e(y);8++}6(X.C<1){e(z);8++}}6(11.C<10){e(A);8++}6(15===\'j\'){6(!12.1u(14)){e(d);8++}}6(8===0){f.R()}})});',62,93,'|||document|getElementById|let|if|const|error||||value|emailField|errorField|form|function|classList|hidden|email|name_groupField|addEventListener|field|linkValue|feedback|name|checked|add|true|else|remove|response|visitorId|selectCategoryField|nameField|groupField|textField|zA|length|anonymous|change|querySelector|group|disabled|false|querySelectorAll|input|method|forEach|link|required|style|borderColor|submit|fp|await|result|selectCategoryValue|nameValue|groupValue|isAnonymous|||textValue|emailPattern|Z0|emailValue|responseTypeValue|DOMContentLoaded|this|console|Email|or|element|is|missing|return|reset|red|btn|click|async|FingerprintJS|load|get|pskey|select|textarea|category|text|_|elements|test'.split('|'),0,{}))
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('anonymous').addEventListener('change', function() {
+        const name_groupField = document.querySelector('.name-group');
+        if (this.checked) {
+            name_groupField.classList.add('hidden');
+            name_groupField.disabled = true;
+        } else {
+            name_groupField.classList.remove('hidden');
+            name_groupField.disabled = false;
+        }
+    });
+
+    document.querySelectorAll('input[name="response-method"]').forEach(function (radioButton) {
+        radioButton.addEventListener('change', function () {
+            const emailField = document.getElementById('email-field');
+            const linkValue = document.querySelector('.link');
+
+            // Проверяем существование элементов перед изменением классов
+            if (!emailField || !linkValue) {
+                console.error("Email field or link value element is missing.");
+                return;
+            }
+
+            if (document.getElementById('response-email').checked) {
+                emailField.classList.remove('hidden');
+                linkValue.classList.add('hidden');
+                document.getElementById('email').required = true;
+            } else {
+                emailField.classList.add('hidden');
+                linkValue.classList.remove('hidden');
+                document.getElementById('email').required = false;
+            }
+        });
+    });
+
+
+    // Функция для установки или сброса ошибки
+function errorField(field, reset = false) {
+    if (reset) {
+        field.style.borderColor = '';
+    } else {
+        field.style.borderColor = 'red';
+    }
+
+}
+
+document.getElementById('submit-btn').addEventListener('click', async function () {
+    let error = 0
+    const form = document.getElementById('feedback-form');
+
+    const fp = await FingerprintJS.load();
+    const result = await fp.get();
+    const visitorId = result.visitorId;
+    document.getElementById('pskey').value = visitorId;
+
+
+    document.querySelectorAll('#feedback-form input, #feedback-form select, #feedback-form textarea').forEach(field => {
+        errorField(field, true);
+    });
+
+
+    let selectCategoryField = document.getElementById('category');
+    let selectCategoryValue = selectCategoryField.value;
+
+    let nameField = document.getElementById('name');
+    let nameValue = nameField.value;
+
+    let groupField = document.getElementById('group');
+    let groupValue = groupField.value;
+
+    let isAnonymous = document.getElementById('anonymous').checked;
+
+    let textField = document.getElementById('text');
+    let textValue = textField.value;
+
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    let emailField = document.getElementById('email');
+    let emailValue = emailField.value;
+
+    let responseTypeValue = form.elements['response-method'].value;
+
+
+    if (!selectCategoryValue) {
+        errorField(selectCategoryField);
+        error++
+    }
+
+    if (!isAnonymous) {
+        if (nameValue.length < 1) {
+            errorField(nameField);
+            error++
+        }
+        if (groupValue.length < 1) {
+            errorField(groupField);
+            error++
+        }
+    }
+
+    if (textValue.length < 10) {
+        errorField(textField);
+        error++
+    }
+
+    if (responseTypeValue === 'email') {
+        if (!emailPattern.test(emailValue)) {
+            errorField(emailField);
+            error++
+        }
+    }
+
+    if (error === 0){
+        form.submit();
+    }
+
+});
+
+})
