@@ -32,7 +32,7 @@ def student_required(redirect_url):
 
 
 
-def index(request):
+def board(request):
     """
         Отображает главную страницу. Учитывает текущие параметры фильтрации и поиска.
         Передает данные авторизации и текущего пользователя в контекст.
@@ -62,7 +62,7 @@ def index(request):
         'auth': True if student_id else False
     }
 
-    return render(request, 'core/index.html', context)
+    return render(request, 'core/board.html', context)
 
 
 
@@ -353,3 +353,15 @@ def loadmore_my(request):
             return JsonResponse({'success': False, 'error': str(e)}, status=500)
     else:
         return JsonResponse({'success': False, 'error': 'Метод не поддерживается'}, status=405)
+
+
+def index(request):
+    student_id = request.session.get('student_id')
+    student = Students.objects.filter(id=int(student_id)).first()
+
+    context = {
+        'user_id': student_id,
+        'email': student.email
+    }
+
+    return render(request, 'core/index.html', context)

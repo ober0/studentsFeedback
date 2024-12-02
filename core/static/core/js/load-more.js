@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
         let getAttr = window.location.href.split('?')[1]
 
         // Выполняем POST-запрос
-        fetch(`loadmore/?${getAttr}`, {
+        fetch(`/loadmore/?${getAttr}`, {
             method: 'POST',
             headers: {
                 'X-CSRFToken': csrfToken

@@ -3,7 +3,7 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <link rel="stylesheet" href="{% static 'core/css/base.css'%}">
 <header>
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-xl navbar-light bg-light">
   <div class="container">
     <a class="navbar-brand " href="{% url 'index' %}">
       <img src="{% static 'core/img/logo.png'%}" alt="KS54" height="60">
@@ -17,6 +17,9 @@
         <li class="nav-item">
           <a class="nav-link" href="{% url 'index' %}">Главная</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'board' %}">Доска обращений</a>
+        </li>  
         <li class="nav-item">
           <a class="nav-link" href="{% url 'my_complaints' %}">Мои обращения</a>
         </li>
