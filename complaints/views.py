@@ -97,8 +97,12 @@ def create(request):
 
         # Создание жалобы
         try:
-            user_id = request.session.get('student_id')
-            user = Students.objects.filter(id=int(user_id)).first()
+            try:
+                user_id = request.session.get('student_id')
+                user = Students.objects.filter(id=int(user_id)).first()
+            except:
+                user = None
+
             complaint = Complaint.objects.create(
                 user=user,
                 content=content,
@@ -129,6 +133,7 @@ def create(request):
                 block_user.save()
                 return redirect('/blocked/')
         except Exception as e:
+            print(e)
             messages.error(request, str(e))
             return redirect('/complaints/create/')
 

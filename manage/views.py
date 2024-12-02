@@ -25,7 +25,7 @@ def getAdminName(request):
     """
 
     first_name = request.user.first_name
-    if first_name is not None or first_name == '':
+    if first_name is None or first_name == '':
         return 'admin'
     try:
         second_name = request.user.last_name[0]

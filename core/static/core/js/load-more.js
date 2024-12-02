@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             Текст обращения: ${complaint.content}
                         </p>
                         <hr>
-                        <p><strong>Ответ администратора:</strong> ${responseText}</p>
+                        <p><strong>Ответ администратора (${complaint.admin}):</strong> ${responseText}</p>
                         <p class="text-muted">
                             Дата создания: ${complaint.created_at}
                         </p>

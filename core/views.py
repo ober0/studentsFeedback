@@ -1,8 +1,9 @@
 import random
 import secrets
 import re
-from django.db.models import Q
-from django.db.models import Count, OuterRef, Exists
+from django.db.models import Q, F, Value, When, Case
+from django.db.models import Count, Subquery, OuterRef, Exists
+from django.db.models.functions import Lower, Substr, Concat
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -229,7 +230,16 @@ def loadmore(request):
                 Q(content__iregex=escaped_search_query) | Q(category__iregex=escaped_search_query)
             ).annotate(
                 like_count=Count('complaintlike'),
-                liked=Exists(likes_subquery)
+                liked=Exists(likes_subquery),
+                admin_name=Case(
+                    When(admin__first_name='', then=Value('admin')),
+                    default=Concat(
+                        F('admin__first_name'),
+                        Value(' '),
+                        Substr(F('admin__last_name'), 1, 1),
+                        Value('.')
+                    )
+                )
                 ).order_by(sort_query)
             complaints_count_all = len(complaints)
             complaints = complaints[start : start + settings.COMPLAINTS_LIST_SIZE]
@@ -247,6 +257,7 @@ def loadmore(request):
                     'created_at': format_datetime(complaint.created_at, "d MMMM yyyy, HH:mm", locale="ru") if complaint.created_at else None,
                     'liked': complaint.liked,
                     'like_count': complaint.like_count,
+                    'admin': complaint.admin_name,
                     'link': link,
                 })
 
@@ -295,30 +306,21 @@ def loadmore_my(request):
             escaped_search_query = re.escape(search_query)
 
 
-
-            # Получаем жалобы
-            complaints1 = Complaint.objects.filter(user=student, is_spam=False).filter(
+            complaints = Complaint.objects.filter(is_spam=False).filter(
+                Q(user=student) | Q(email_for_reply=student.email) | Q(ip_address=ip) | Q(device_identifier=pskey)
+            ).filter(
                 Q(content__iregex=escaped_search_query) | Q(category__iregex=escaped_search_query)
-            ).distinct()
-
-            complaints2 = Complaint.objects.filter(email_for_reply=student.email, is_spam=False).filter(
-                Q(content__iregex=escaped_search_query) | Q(category__iregex=escaped_search_query)
-            ).distinct()
-
-            complaints3 = Complaint.objects.filter(ip_address=ip, is_spam=False).filter(
-                Q(content__iregex=escaped_search_query) | Q(category__iregex=escaped_search_query)
-            ).distinct()
-
-            complaints4 = Complaint.objects.filter(device_identifier=pskey, is_spam=False).filter(
-                Q(content__iregex=escaped_search_query) | Q(category__iregex=escaped_search_query)
-            ).distinct()
-
-            # Объединяем запросы без вызова distinct()
-            complaints1_2 = complaints1.union(complaints2)
-            complaints3_4 = complaints3.union(complaints4)
-
-            # Сортируем окончательный результат
-            complaints = list(complaints1_2.union(complaints3_4).order_by('-created_at'))
+            ).annotate(
+                admin_name=Case(
+                    When(admin__first_name='', then=Value('admin')),  # Если имя пустое, подставляем 'admin'
+                    default=Concat(
+                        F('admin__first_name'),
+                        Value(' '),
+                        Substr(F('admin__last_name'), 1, 1),
+                        Value('.')
+                    )
+                )
+            ).order_by('-created_at')
 
             complaints_count_all = len(complaints)
             complaints = complaints[start: start + settings.COMPLAINTS_LIST_SIZE]
@@ -341,6 +343,7 @@ def loadmore_my(request):
                     ) if complaint.created_at else None,
                     'is_published': complaint.is_published,
                     'is_public': complaint.is_public,
+                    'admin':complaint.admin_name,
                     'link': link
                 })
 

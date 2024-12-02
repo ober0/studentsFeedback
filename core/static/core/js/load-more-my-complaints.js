@@ -70,8 +70,8 @@ document.addEventListener('DOMContentLoaded', function () {
             `<p style="color: lawngreen">✔ Опубликовано</p>` :
             `<p style="color: red">❌ Не опубликовано</p>`;
         const responseTextHtml = complaint.response_text ?
-            `<p><strong>Ответ администратора: </strong>${responseText}</p>` :
-            `<p><strong>Не просмотрено администрацией</strong></p>`;
+            `<p><strong>Ответ администратора (${complaint.admin}): </strong>${responseText}</p>` :
+            `<p><strong>Не просмотрено администрацией или нет ответа</strong></p>`;
 
         return `
             <div class="complaint" cid="${complaint.id}">
