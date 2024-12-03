@@ -34,12 +34,8 @@
       <!-- Кнопки справа -->
         <hr>
       <ul class="navbar-nav" style="align-items: center">
-
         <li class="nav-item">
-            <form action="/admin/logout/" method="post">
-                {% csrf_token %}
-                <button type="submit" class="exit-btn nav-link">Выйти</button>
-            </form>
+          <p  style="white-space: nowrap;margin-bottom: 0" class="exit-btn nav-link">Выйти</p>
         </li>
         <li class="nav-item">
           <p  style="white-space: nowrap;margin-bottom: 0" class="nav-link">{{ name }}</p>
@@ -55,4 +51,15 @@
 
 </nav>
 </header>
+    <script>
+    document.querySelector('.exit-btn').addEventListener('click', function () {
+        fetch('/admin/logout/', {
+            method:'POST',
+            headers:{
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        window.location.href = '/'
+    })
+    </script>
 {% endblock %}

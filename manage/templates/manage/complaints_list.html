@@ -57,28 +57,35 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for complaint in complaints %}
-                        <tr class="tr-comp" id="{{ complaint.id }}">
-                            <td>{{ complaint.id }}</td>
-                            <td>{{ complaint.category }}</td>
-                            <td>
-                                {% if not complaint.is_anonymous %}
-                                    {{ complaint.user_name }}
-                                {% else %}
-                                    Анонимно
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if not complaint.is_anonymous %}
-                                    {{ complaint.user_group }}
-                                {% else %}
-                                    Анонимно
-                                {% endif %}
-                            </td>
-                            <td>{{ complaint.created_at }}</td>
+                    {% if complaints|length == 0 %}
+                        <tr>
+                            <td colspan="5" class="text-center">Обращений нет</td>
                         </tr>
-                    {% endfor %}
+                    {% else %}
+                        {% for complaint in complaints %}
+                            <tr class="tr-comp" id="{{ complaint.id }}">
+                                <td>{{ complaint.id }}</td>
+                                <td>{{ complaint.category }}</td>
+                                <td>
+                                    {% if not complaint.is_anonymous %}
+                                        {{ complaint.user_name }}
+                                    {% else %}
+                                        Анонимно
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if not complaint.is_anonymous %}
+                                        {{ complaint.user_group }}
+                                    {% else %}
+                                        Анонимно
+                                    {% endif %}
+                                </td>
+                                <td>{{ complaint.created_at }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
                 </tbody>
+
             </table>
         </div>
     </main>
