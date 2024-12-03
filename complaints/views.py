@@ -228,10 +228,19 @@ def complaint(request, key):
     """
     Отображает конкретную жалобу по её уникальному коду ответа.
     """
+    student_id = request.session.get('student_id')
+    email = request.session.get('email')
+    context = {
+        'student_id': student_id,
+        'email': email,
+        'auth': True if student_id else False
+    }
+    print(context)
+
     complaint = Complaint.objects.filter(reply_code=key).first()
     if complaint:
-        context = {'complaint': complaint}
-        return render(request, 'core/complaint_view.html', context)
+        context['complaint'] = complaint
+        return render(request, 'core/complaint_view.html', context=context)
     return redirect('index')
 
 

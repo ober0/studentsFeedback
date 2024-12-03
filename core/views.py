@@ -181,11 +181,12 @@ def my_complaints(request):
     """
 
     student_id = request.session.get('student_id')
-    student = Students.objects.filter(id=int(student_id)).first()
+    email = request.session.get('email')
 
     context = {
         'user_id': student_id,
-        'email': student.email
+        'email': email,
+        'auth': True if student_id else False
     }
 
     return render(request, 'core/my_complaints.html', context)
@@ -199,8 +200,7 @@ def loadmore(request):
     if request.method == 'POST':
 
         start = int(request.POST.get('start', 0))
-        student_id = request.session.get('student_id', None)
-        email = request.session.get('email', None)
+        student_id = request.session.get('student_id')
 
 
         sort = request.GET.get('filter', 'time')
@@ -273,7 +273,7 @@ def loadmore(request):
 
         return JsonResponse(context)
 
-
+@student_required('/complaints/my/')
 def loadmore_my(request):
     """
         Загружает дополнительный список жалоб, принадлежащих текущему пользователю, с учетом поиска.
@@ -285,8 +285,8 @@ def loadmore_my(request):
         try:
             start = int(request.POST.get('start', 0))
             # Получаем данные пользователя
-            student_id = request.session.get('student_id')
-            student = Students.objects.filter(id=int(student_id)).first()
+            student_id = int(request.session.get('student_id'))
+            student = Students.objects.filter(id=student_id).first()
 
             data = request.POST
 
@@ -357,11 +357,12 @@ def loadmore_my(request):
 
 def index(request):
     student_id = request.session.get('student_id')
-    student = Students.objects.filter(id=int(student_id)).first()
+    email = request.session.get('email')
 
     context = {
         'user_id': student_id,
-        'email': student.email
+        'email': email,
+        'auth': True if student_id else False
     }
 
     return render(request, 'core/index.html', context)
