@@ -9,15 +9,15 @@ document.querySelector('.select-filter').addEventListener('change', function () 
     const selectedValue = selectElement.value;
     if (selectedValue) {
         if (searchQuery) {
-            window.location.href = `/?search=${searchQuery}&filter=${selectedValue}`;
+            window.location.href = `/board/?search=${searchQuery}&filter=${selectedValue}`;
         } else {
-            window.location.href = `/?filter=${selectedValue}`;
+            window.location.href = `/board/?filter=${selectedValue}`;
         }
     } else {
         if (searchQuery) {
-            window.location.href = `/?search=${searchQuery}`;
+            window.location.href = `/board/?search=${searchQuery}`;
         } else {
-            window.location.href = '/';
+            window.location.href = '/board/';
         }
     }
 })
@@ -32,15 +32,15 @@ document.getElementById('search').addEventListener('keydown', function (event) {
         if (filterElement) {
             const filter = filterElement.value;
             if (searchQuery) {
-                window.location.href = `/?search=${searchQuery}&filter=${filter}`;
+                window.location.href = `/board/?search=${searchQuery}&filter=${filter}`;
             } else {
-                window.location.href = `/?filter=${filter}`;
+                window.location.href = `/board/?filter=${filter}`;
             }
         } else {
             if (searchQuery) {
-                window.location.href = `/?search=${searchQuery}`;
+                window.location.href = `/board/?search=${searchQuery}`;
             } else {
-                window.location.href = '/';
+                window.location.href = '/board/';
             }
         }
     }
@@ -54,15 +54,15 @@ document.getElementById('search-go').addEventListener('click', function (){
         if (filterElement) {
             const filter = filterElement.value;
             if (searchQuery) {
-                window.location.href = `/?search=${searchQuery}&filter=${filter}`;
+                window.location.href = `/board/?search=${searchQuery}&filter=${filter}`;
             } else {
-                window.location.href = `/?filter=${filter}`;
+                window.location.href = `/board/?filter=${filter}`;
             }
         } else {
             if (searchQuery) {
-                window.location.href = `/?search=${searchQuery}`;
+                window.location.href = `/board/?search=${searchQuery}`;
             } else {
-                window.location.href = '/';
+                window.location.href = '/board/';
             }
         }
 })
