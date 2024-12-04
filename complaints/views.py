@@ -131,6 +131,7 @@ def create(request):
                     ended_at=block_end_time
                 )
                 block_user.save()
+                messages.error(request, 'Вы заблокированы за нецензурную лексику ')
                 return redirect('/blocked/')
         except Exception as e:
             print(e)
