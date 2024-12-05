@@ -14,11 +14,18 @@
             padding-left: 10px;
             padding-right: 10px;
         }
-        @media (max-width: 352px) {
-            .unblock-btn {
-                margin-bottom: 8px;
+        @media (max-width: 576px) {
+            .card-footer {
+                display: flex;
+                flex-direction: column;
+                gap: 7px; /* Расстояние между кнопками */
             }
+
         }
+        .card-footer .btn {
+            width: fit-content !important;
+        }
+
     </style>
 </head>
 <body>
@@ -47,15 +54,16 @@
                 <p><strong>Дата истечения блокировки:</strong> {{ unban_request.ended_at|date:"j E H:i:s" }}</p>
             </div>
             <div class="card-footer text-left">
-                <form action="{% url 'approve_unban_requests' id=unban_request.id %}" method="post" class="d-inline">
+                <form action="{% url 'approve_unban_requests' id=unban_request.id %}" method="post" class="d-inline w-100">
                     {% csrf_token %}
-                    <button type="submit" class="unblock-btn btn btn-success">Разблокировать</button>
+                    <button type="submit" class="unblock-btn btn btn-success w-100">Разблокировать</button>
                 </form>
-                <form action="{% url 'close_unban_requests' id=unban_request.id %}" method="post" class="d-inline">
+                <form action="{% url 'close_unban_requests' id=unban_request.id %}" method="post" class="d-inline w-100 mt-2">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-secondary">Закрыть запрос</button>
+                    <button type="submit" class="btn btn-secondary w-100">Закрыть запрос</button>
                 </form>
             </div>
+
         </div>
     </main>
 
