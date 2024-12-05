@@ -149,7 +149,7 @@ EMAIL_HOST_USER = 'AbuBandit1112@yandex.ru'
 EMAIL_HOST_PASSWORD = 'lkmvlfzmkrpbxxkx'
 DEFAULT_FROM_EMAIL = 'AbuBandit1112@yandex.ru'
 
-URL = 'http://http://83.222.27.86'
+URL = 'http://83.222.27.86'
 
 MODERATION_REQUEST_URL = f'{URL}/moderation/auto-check/'
 COMPLAINTS_VIEW_URL = f'{URL}/complaints/'
