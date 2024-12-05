@@ -122,6 +122,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+
 LOGOUT_REDIRECT_URL = ''
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -146,7 +149,8 @@ EMAIL_HOST_USER = 'AbuBandit1112@yandex.ru'
 EMAIL_HOST_PASSWORD = 'lkmvlfzmkrpbxxkx'
 DEFAULT_FROM_EMAIL = 'AbuBandit1112@yandex.ru'
 
-URL = 'http://192.168.156.137:8000'
+URL = 'http://192.168.137.52:8000'
+URL = 'http://192.168.137.52:8000'
 MODERATION_REQUEST_URL = f'{URL}/moderation/auto-check/'
 COMPLAINTS_VIEW_URL = f'{URL}/complaints/'
 VIEW_COMPLAINTS_URL = f'{URL}/complaints/my/'
