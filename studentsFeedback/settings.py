@@ -24,7 +24,7 @@ SECRET_KEY = 'django-insecure-qq)u5ot8do$*((dtqfy0fmpe37m)0$ax#g!o5xda$95x(l=9v&
 ENCRYPTION_KEY = 'HPfw6Tsve7-d9j9zAyirgHRGC1sATzBVMneYgf_9I3I='
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -149,7 +149,7 @@ EMAIL_HOST_USER = 'AbuBandit1112@yandex.ru'
 EMAIL_HOST_PASSWORD = 'lkmvlfzmkrpbxxkx'
 DEFAULT_FROM_EMAIL = 'AbuBandit1112@yandex.ru'
 
-URL = ''
+URL = 'http://83.222.27.86'
 
 MODERATION_REQUEST_URL = f'{URL}/moderation/auto-check/'
 COMPLAINTS_VIEW_URL = f'{URL}/complaints/'
