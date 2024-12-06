@@ -169,3 +169,15 @@ svg{
     }
 }
 
+.main-title{
+    font-size: 2.7rem !important;
+}
+
+@media (max-width: 425px) {
+    .main-title{
+        font-size: 2.4rem !important;
+    }
+    .main-text{
+        font-size: 1.15rem !important;
+    }
+}
