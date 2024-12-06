@@ -406,8 +406,16 @@ def unban_requests_check(request):
     unban_requests = UserUnbanRequest.objects.filter(review_result='in_work').annotate(
         is_anonymous=F('complaint__is_anonymous'),
         user_name=F('complaint__user_name'),
-        block_reason=Subquery(blocked_reason_subquery)
+        block_reason=Subquery(blocked_reason_subquery),
+        ended_at=Subquery(BlockedUser.objects.filter(complaints_spam_id=OuterRef('complaint')).values('ended_at')[:1])
     )
+
+    for req in unban_requests:
+        if req.ended_at is None:
+            req.review_result = 'unbanned'
+            req.save()
+    unban_requests = unban_requests.exclude(ended_at__isnull=True)
+
 
     name = getAdminName(request)
 
@@ -434,6 +442,7 @@ def unban_request_check(request, id):
         ),
         ended_at=Subquery(BlockedUser.objects.filter(complaints_spam_id=OuterRef('complaint')).values('ended_at')[:1])
     ).first()
+
 
     name = getAdminName(request)
 
