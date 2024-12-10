@@ -411,11 +411,12 @@ def unban_requests_check(request):
     )
 
     for req in unban_requests:
-        if req.ended_at is None or req.ended_at < timezone.now():
-            req.review_result = 'unbanned'
-            req.save()
-    unban_requests = unban_requests.exclude(ended_at__isnull=True)
+        if req.ended_at:
+            if req.ended_at < timezone.now():
+                req.review_result = 'unbanned'
+                req.save()
 
+    unban_requests = unban_requests.filter(review_result='in_work')
 
     name = getAdminName(request)
 
