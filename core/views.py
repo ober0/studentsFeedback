@@ -179,6 +179,7 @@ def my_complaints(request):
     """
         Отображает страницу с жалобами текущего пользователя.
     """
+    search = request.GET.get('search')
 
     student_id = request.session.get('student_id')
     email = request.session.get('email')
@@ -188,6 +189,9 @@ def my_complaints(request):
         'email': email,
         'auth': True if student_id else False
     }
+
+    if search:
+        context['search'] = search
 
     return render(request, 'core/my_complaints.html', context)
 
