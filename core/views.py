@@ -83,12 +83,22 @@ def auth(request):
     """
         Отображает страницу авторизации. Сохраняет путь для перенаправления после авторизации.
     """
-
     if request.method == 'GET':
+        student_id = request.session.get('student_id')
+        email = request.session.get('email')
+
         next = request.GET.get('next')
         if not next:
             next = '/'
-        return render(request, 'core/auth.html', {'next': next})
+
+        context = {
+            'student_id': student_id,
+            'auth': True if student_id else False,
+            'email': email,
+            'next': next
+        }
+
+        return render(request, 'core/auth.html', context)
 
 
 def send_code(request):
@@ -107,7 +117,16 @@ def send_code(request):
 
         r.setex(email, 300, code)
 
-        return render(request, 'core/enter_code.html', {'email': email, 'next': next})
+        student_id = request.session.get('student_id')
+
+        context = {
+            'student_id': student_id,
+            'auth': True if student_id else False,
+            'email': email,
+            'next': next
+        }
+
+        return render(request, 'core/enter_code.html', context)
 
 def check_code(request):
     """
@@ -134,6 +153,7 @@ def check_code(request):
             request.session['student_id'] = id
             request.session['email'] = email
 
+            messages.success(request, f'Вход в аккаунт {email} успешен!')
             return redirect(str(next))
 
         else:
