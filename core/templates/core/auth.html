@@ -4,10 +4,13 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" type="text/css" href="{% static 'core/css/auth.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'core/css/base.css' %}">
     <link rel="icon" href="{% static 'core/img/favicon.ico' %}" type="image/x-icon">
 </head>
 <body>
-	<div class="limiter">
+{% include 'core/header.html' %}
+	<main>
+        <div class="limiter">
 		<div class="container-login100">
 			<div class="wrap-login100 p-t-85 p-b-20">
 				<form class="login100-form validate-form" method="POST" action="/auth/code/send/">
@@ -33,6 +36,8 @@
 			</div>
 		</div>
 	</div>
+    </main>
+{% include 'core/footer.html' %}
     <script src="{% static 'core/js/has-val.js' %}"></script>
 </body>
 </html>
