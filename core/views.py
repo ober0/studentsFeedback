@@ -4,7 +4,7 @@ import re
 from django.db.models import Q, F, Value, When, Case
 from django.db.models import Count, Subquery, OuterRef, Exists
 from django.db.models.functions import Lower, Substr, Concat
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from complaints.models import Complaint, ComplaintLike
@@ -91,6 +91,9 @@ def auth(request):
         next = request.GET.get('next')
         if not next:
             next = '/'
+
+        if '<script>' in next or '</script>' in next:
+            return HttpResponseBadRequest("Некорректное значение параметра 'next'")
 
         context = {
             'student_id': student_id,
