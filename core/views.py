@@ -111,7 +111,7 @@ from django.utils.html import escape
 
 def send_code(request):
     if request.method == 'POST':
-        code = random.randint(100000, 999999)
+        code = secrets.randbelow(900000) + 100000
         next_url = request.POST.get('next')
         email = request.POST.get('email')
         header = 'Код для входа в аккаунт на сайте ks54'
