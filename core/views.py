@@ -107,15 +107,12 @@ def auth(request):
         return render(request, 'core/auth.html', context)
 
 
-def send_code(request):
-    """
-        Генерирует код подтверждения для входа и отправляет его на указанный email.
-        Код сохраняется в Redis с временем жизни 5 минут.
-    """
+from django.utils.html import escape
 
+def send_code(request):
     if request.method == 'POST':
         code = random.randint(100000, 999999)
-        next = request.POST.get('next')
+        next_url = request.POST.get('next')
         email = request.POST.get('email')
         header = 'Код для входа в аккаунт на сайте ks54'
 
@@ -128,14 +125,11 @@ def send_code(request):
         context = {
             'student_id': student_id,
             'auth': True if student_id else False,
-            'email': email,
-            'next': next
+            'email': escape(email),
+            'next': next_url
         }
 
         return render(request, 'core/enter_code.html', context)
-
-
-
 
 def check_code(request):
     if request.method == 'POST':
@@ -155,7 +149,6 @@ def check_code(request):
 
             messages.success(request, f'Вход в аккаунт {email} успешен!')
 
-
             if url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
                 return redirect(next_url)
             else:
@@ -163,7 +156,8 @@ def check_code(request):
 
         else:
             messages.error(request, 'Код неверный!')
-            return render(request, 'core/enter_code.html', {'email': email})
+            return render(request, 'core/enter_code.html', {'email': escape(email)})
+
 
 
 def create_complaint(request):
