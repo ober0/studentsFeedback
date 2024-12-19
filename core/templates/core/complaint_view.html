@@ -39,7 +39,8 @@
                     {% else %}
                         <p><strong>Не просмотрено администрацией</strong></p>
                     {% endif %}
-                    <p class="text-muted">Дата создания: {{ complaint.created_at|escape }}</p>
+                    <p class="text-muted">Дата создания: {{ complaint.created_at|date:"d F Y, H:i" }}</p>
+
                 </div>
             </div>
         </div>
