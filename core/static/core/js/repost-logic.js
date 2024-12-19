@@ -100,6 +100,9 @@ function hiderepost() {
     const header = document.querySelector('header');
     const footer = document.querySelector('footer');
 
+    let btn = document.querySelector('.repost-btn')
+    btn.disabled = false;
+    btn.innerText = 'Скопировать ссылку'
     // Затемняем основной контент
     if (main) {
         main.style.opacity = '1';
