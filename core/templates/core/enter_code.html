@@ -1,42 +1,43 @@
 {% load static %}
-<html lang="en"><head>
-	<title>Вход</title>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" type="text/css" href="{% static 'core/css/auth.css' %}">
-	<link rel="stylesheet" type="text/css" href="{% static 'core/css/base.css' %}">
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Вход</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="{% static 'core/css/auth.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'core/css/base.css' %}">
     <link rel="icon" href="{% static 'core/img/favicon.ico' %}" type="image/x-icon">
 </head>
 <body>
-{% include 'core/header.html' %}
-	<main>
+    {% include 'core/header.html' %}
+    <main>
         <div class="limiter">
-		<div class="container-login100">
-			<div class="wrap-login100 p-t-85 p-b-20">
-				<form class="login100-form validate-form" method="POST" action="/auth/code/check/">
-                    {% csrf_token %}
-                    <input type="hidden" name="next" value="{{ next }}">
-                    <input type="hidden" name="email" value="{{ email }}">
+            <div class="container-login100">
+                <div class="wrap-login100 p-t-85 p-b-20">
+                    <form class="login100-form validate-form" method="POST" action="/auth/code/check/">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ next|escape }}">
+                        <input type="hidden" name="email" value="{{ email|escape }}">
 
-					<span class="login100-form-title mb-50" >
-						Добро пожаловать
-					</span>
+                        <span class="login100-form-title mb-50">
+                            Добро пожаловать
+                        </span>
 
-					<div class="wrap-input100 validate-input mb-30" data-validate="Code">
-						<input class="input100" type="text" name="code" autocomplete="off" required>
-						<span class="focus-input100" data-placeholder="Code"></span>
-					</div>
+                        <div class="wrap-input100 validate-input mb-30" data-validate="Введите код">
+                            <input class="input100" type="text" name="code" autocomplete="off" required>
+                            <span class="focus-input100" data-placeholder="Код"></span>
+                        </div>
 
-
-					<div class="container-login100-form-btn">
-						<button class="login100-form-btn">
-							Войти
-						</button>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
+                        <div class="container-login100-form-btn">
+                            <button class="login100-form-btn">
+                                Войти
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </main>
     {% include 'core/footer.html' %}
     <script src="{% static 'core/js/has-val.js' %}"></script>
