@@ -7,6 +7,8 @@ from django.db.models.functions import Lower, Substr, Concat
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.utils.html import escape
+
 from complaints.models import Complaint, ComplaintLike
 from .models import Students
 from .redis import r
@@ -178,6 +180,7 @@ def create_complaint(request):
         email = user.email
     except:
         email = None
+    email = escape(email)
     return render(request, 'core/create_complaint.html', {'email': email, 'student_id': user_id,
         'auth': True if user_id else False, 'link': link, 'link_url': link_url})
 
