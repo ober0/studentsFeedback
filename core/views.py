@@ -4,15 +4,18 @@ import re
 from django.db.models import Q, F, Value, When, Case
 from django.db.models import Count, Subquery, OuterRef, Exists
 from django.db.models.functions import Lower, Substr, Concat
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.utils.html import escape
+
 from complaints.models import Complaint, ComplaintLike
 from .models import Students
 from .redis import r
 from .task import send_email
 from django.conf import settings
 from babel.dates import format_datetime
+from django.utils.http import url_has_allowed_host_and_scheme
 
 
 
@@ -91,6 +94,9 @@ def auth(request):
         if not next:
             next = '/'
 
+        if '<script>' in next or '</script>' in next:
+            return HttpResponseBadRequest("Некорректное значение параметра 'next'")
+
         context = {
             'student_id': student_id,
             'auth': True if student_id else False,
@@ -101,15 +107,12 @@ def auth(request):
         return render(request, 'core/auth.html', context)
 
 
-def send_code(request):
-    """
-        Генерирует код подтверждения для входа и отправляет его на указанный email.
-        Код сохраняется в Redis с временем жизни 5 минут.
-    """
+from django.utils.html import escape
 
+def send_code(request):
     if request.method == 'POST':
-        code = random.randint(100000, 999999)
-        next = request.POST.get('next')
+        code = secrets.randbelow(900000) + 100000
+        next_url = request.POST.get('next')
         email = request.POST.get('email')
         header = 'Код для входа в аккаунт на сайте ks54'
 
@@ -122,43 +125,39 @@ def send_code(request):
         context = {
             'student_id': student_id,
             'auth': True if student_id else False,
-            'email': email,
-            'next': next
+            'email': escape(email),
+            'next': next_url
         }
 
         return render(request, 'core/enter_code.html', context)
 
 def check_code(request):
-    """
-        Проверяет код подтверждения, введенный пользователем.
-        Если код верен, создает пользователя (если он не существует) и сохраняет его данные в сессии.
-    """
-
     if request.method == 'POST':
-        next = request.POST.get('next')
-
+        next_url = request.POST.get('next', '/')
         code_input = request.POST.get('code')
         email = request.POST.get('email')
-        code = r.get(email).decode('utf-8')
+
+        code = r.get(email).decode('utf-8') if r.get(email) else None
 
         if code == code_input:
-            try:
-                student = Students.objects.filter(email=email).first()
-                id = student.id
-            except:
+            student = Students.objects.filter(email=email).first()
+            if not student:
                 student = Students.objects.create(email=email)
-                student.save()
-                id = student.id
 
-            request.session['student_id'] = id
+            request.session['student_id'] = student.id
             request.session['email'] = email
 
             messages.success(request, f'Вход в аккаунт {email} успешен!')
-            return redirect(str(next))
+
+            if url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+                return redirect(next_url)
+            else:
+                return redirect('home')
 
         else:
             messages.error(request, 'Код неверный!')
-            return render(request, 'core/enter_code.html', {'email': email})
+            return render(request, 'core/enter_code.html', {'email': escape(email)})
+
 
 
 def create_complaint(request):
@@ -175,6 +174,7 @@ def create_complaint(request):
         email = user.email
     except:
         email = None
+    email = escape(email)
     return render(request, 'core/create_complaint.html', {'email': email, 'student_id': user_id,
         'auth': True if user_id else False, 'link': link, 'link_url': link_url})
 

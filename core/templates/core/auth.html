@@ -15,7 +15,7 @@
 			<div class="wrap-login100 p-t-85 p-b-20">
 				<form class="login100-form validate-form" method="POST" action="/auth/code/send/">
                     {% csrf_token %}
-                    <input type="hidden" name="next" value="{{ next }}">
+                    <input type="hidden" name="next" value="{{ next|escape }}">
 
 					<span class="login100-form-title mb-50" >
 						Добро пожаловать

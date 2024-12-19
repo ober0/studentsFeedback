@@ -84,14 +84,14 @@
                 </div>
 
                 <div class="form-group link hidden">
-                    <input type="hidden" name="link" id="link-display" value="{{ link }}">
-                    <input type="hidden" id="link-url" value="{{ link_url }}">
+                    <input type="hidden" name="link" id="link-display" value="{{ link|escape }}">
+                    <input type="hidden" id="link-url" value="{{ link_url|escape }}">
                     <p>
                         <small><strong>Внимание!</strong> Обязательно сохраните ссылку</small>
                     </p>
                     <button type="button" class="btn btn-secondary" id="copy-link-btn">Скопировать ссылку</button>
                     <p class="hidden" style="color: red">Ссылка не скопирована, попробуйте вручную</p>
-                    <p class="hidden">{{ link_url }}</p>
+                    <p class="hidden">{{ link_url|escape }}</p>
                 </div>
                 
 

@@ -48,7 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (btn.id === 'copy') {
                 link = btn.getAttribute('data-url');
-                console.log(link)
                 if (navigator.clipboard) {
                     navigator.clipboard.writeText(link)
                         .then(() => resultCopy(true, btn))
