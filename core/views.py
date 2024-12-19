@@ -13,6 +13,7 @@ from .redis import r
 from .task import send_email
 from django.conf import settings
 from babel.dates import format_datetime
+from django.utils.http import url_has_allowed_host_and_scheme
 
 
 
@@ -128,33 +129,32 @@ def send_code(request):
 
         return render(request, 'core/enter_code.html', context)
 
+
+
+
 def check_code(request):
-    """
-        Проверяет код подтверждения, введенный пользователем.
-        Если код верен, создает пользователя (если он не существует) и сохраняет его данные в сессии.
-    """
-
     if request.method == 'POST':
-        next = request.POST.get('next')
-
+        next_url = request.POST.get('next', '/')
         code_input = request.POST.get('code')
         email = request.POST.get('email')
-        code = r.get(email).decode('utf-8')
+
+        code = r.get(email).decode('utf-8') if r.get(email) else None
 
         if code == code_input:
-            try:
-                student = Students.objects.filter(email=email).first()
-                id = student.id
-            except:
+            student = Students.objects.filter(email=email).first()
+            if not student:
                 student = Students.objects.create(email=email)
-                student.save()
-                id = student.id
 
-            request.session['student_id'] = id
+            request.session['student_id'] = student.id
             request.session['email'] = email
 
             messages.success(request, f'Вход в аккаунт {email} успешен!')
-            return redirect(str(next))
+
+
+            if url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+                return redirect(next_url)
+            else:
+                return redirect('home')
 
         else:
             messages.error(request, 'Код неверный!')
