@@ -39,7 +39,7 @@
       <div class="row mb-4">
         <div class="col-md-12">
           <div class="input-group">
-            <input type="text" class="form-control" placeholder="Поиск по словам и категории" name="search" id="search" value="{{ search }}">
+            <input type="text" class="form-control" placeholder="Поиск по словам и категории" name="search" id="search" value="{{ search|escape }}">
             <div class="input-group-append">
               <button class="btn btn-primary" id="search-go" type="button">Искать</button>
             </div>
