@@ -3,11 +3,9 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Запрос #{{ unban_request.id }}</title>
+    <title>Запрос #{{ unban_request.id|escape }}</title>
     <link rel="icon" href="{% static 'core/img/favicon.ico' %}" type="image/x-icon">
-    <!-- Подключение Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <!-- Метатег для обеспечения адаптивности на мобильных устройствах -->
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <style>
         .custom-padding {
@@ -18,9 +16,8 @@
             .card-footer {
                 display: flex;
                 flex-direction: column;
-                gap: 7px; /* Расстояние между кнопками */
+                gap: 7px;
             }
-
         }
         .card-footer .btn {
             width: fit-content !important;
@@ -33,23 +30,23 @@
     {% block admin_header %}{% endblock %}
 
     <main class="custom-padding">
-    {% include 'core/notification.html' %}
+        {% include 'core/notification.html' %}
         <div class="card">
             <div class="card-header">
-                <h5 class="card-title mb-0">Запрос на разблокировку #{{ unban_request.id }}</h5>
+                <h5 class="card-title mb-0">Запрос на разблокировку #{{ unban_request.id|escape }}</h5>
             </div>
             <div class="card-body">
-                <p><strong>Причина блокировки:</strong> {{ unban_request.reason }}</p>
-                <p><strong>Текст запроса:</strong> {{ unban_request.request_text }}</p>
+                <p><strong>Причина блокировки:</strong> {{ unban_request.reason|escape }}</p>
+                <p><strong>Текст запроса:</strong> {{ unban_request.request_text|escape }}</p>
                 <hr>
                 <p><strong>Обращение:</strong></p>
                 {% if unban_request.is_anonymous %}
                     <p>Анонимное обращение</p>
                 {% else %}
-                    <p>{{ unban_request.name }}</p>
+                    <p>{{ unban_request.name|escape }}</p>
                 {% endif %}
-                <p><strong>Категория:</strong> {{ unban_request.category }}</p>
-                <p><strong>Текст обращения:</strong> {{ unban_request.text }}</p>
+                <p><strong>Категория:</strong> {{ unban_request.category|escape }}</p>
+                <p><strong>Текст обращения:</strong> {{ unban_request.text|escape }}</p>
                 <p><strong>Дата истечения блокировки:</strong> {{ unban_request.ended_at|date:"j E H:i:s" }}</p>
             </div>
             <div class="card-footer text-left">
@@ -62,14 +59,12 @@
                     <button type="submit" class="btn btn-secondary w-100">Закрыть запрос</button>
                 </form>
             </div>
-
         </div>
     </main>
 
     {% include 'manage/footer.html' %}
     {% block admin_footer %}{% endblock %}
 
-    <!-- Подключение необходимых JavaScript-файлов для работы компонентов Bootstrap -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
