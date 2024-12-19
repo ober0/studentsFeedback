@@ -12,21 +12,21 @@
     {% include 'core/header.html' %}
     <main style="max-width: 960px !important;" class="container">
     {% include 'core/notification.html' %}
-        <div class="complaint" cid="{{ complaint.id }}">
+        <div class="complaint" cid="{{ complaint.id|escape }}">
             <div class="card mb-4">
                 <div class="card-body">
                     <h5 class="card-title">
                         {% if complaint.is_anonymous %}
                             Анонимное обращение
                         {% else %}
-                            {{ complaint.user_name }}
+                            {{ complaint.user_name|escape }}
                         {% endif %}
                     </h5>
                     <h6 class="card-subtitle mb-2 text-muted">
-                        <strong>Категория:</strong> {{ complaint.category }}
+                        <strong>Категория:</strong> {{ complaint.category|escape }}
                     </h6>
                     <p class="card-text">
-                        <strong>Текст обращения:</strong> {{ complaint.content }}
+                        <strong>Текст обращения:</strong> {{ complaint.content|escape }}
                     </p>
                     {% if complaint.is_published %}
                         <p style="color: lawngreen">✔ Опубликовано</p>
@@ -35,11 +35,11 @@
                     {% endif %}
                     <hr>
                     {% if complaint.response_text %}
-                        <p><strong>Ответ администратора:</strong> {{ complaint.response_text }}</p>
+                        <p><strong>Ответ администратора:</strong> {{ complaint.response_text|escape }}</p>
                     {% else %}
                         <p><strong>Не просмотрено администрацией</strong></p>
                     {% endif %}
-                    <p class="text-muted">Дата создания: {{ complaint.created_at }}</p>
+                    <p class="text-muted">Дата создания: {{ complaint.created_at|escape }}</p>
                 </div>
             </div>
         </div>
